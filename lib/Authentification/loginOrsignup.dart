@@ -33,6 +33,8 @@ class _loginOrsignupState extends State<loginOrsignup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        shadowColor: Color.fromARGB(255, 0, 0, 0),
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {

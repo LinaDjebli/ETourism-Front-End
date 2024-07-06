@@ -94,14 +94,14 @@ class _CreateActivityState extends State<CreateActivity> {
               ],
             ),
             gapH16,
-            SizebaleTextfield(
+          /*  SizebaleTextfield(
               sizefield: 2,
               max: 12,
               controller: Controller2,
               hintText: "Enter your description here ",
               iconVisible: false,
               iconOnPressed: onPressed,
-            ),
+            ),*/
             gapH16,
           ],
         ),

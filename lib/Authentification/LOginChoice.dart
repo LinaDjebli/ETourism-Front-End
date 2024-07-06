@@ -5,6 +5,7 @@ import 'package:tro/Authentification/AgencySignup.dart';
 import 'package:tro/Authentification/GuideSignup.dart';
 import 'package:tro/Authentification/Signup.dart';
 import 'package:tro/Authentification/loginOrsignup.dart';
+import 'package:tro/constants/Size.dart';
 
 class LoginChoice extends StatelessWidget {
   const LoginChoice({super.key});
@@ -14,7 +15,7 @@ class LoginChoice extends StatelessWidget {
     // TODO: implement build
     return Scaffold( 
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromARGB(255, 86, 139, 255),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -97,14 +98,14 @@ class LoginChoice extends StatelessWidget {
                     width: 310,
                     child: Text("Explore Algeria, book tours, and enjoy personalized travel experiences.",style: TextStyle(fontSize: 12,color: Colors.grey), )),
                 const SizedBox(
-                  height: 50,
+                  height: 30,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Have an account  ? ",
-                      style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+                      style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0), fontSize: 16),
                     ),
                     TextButton(
                         onPressed: () {
@@ -116,10 +117,11 @@ class LoginChoice extends StatelessWidget {
                         child: Text(
                           "Log in  ",
                           style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold),
+                              color: Colors.blue, fontWeight: FontWeight.bold , fontSize: 16),
                         ))
                   ],
-                )
+                ),
+                gapH16,
               ],
             ),
           ),

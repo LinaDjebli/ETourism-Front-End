@@ -7,10 +7,12 @@ import 'package:tro/Authentification/Login.dart';
 import 'package:tro/Authentification/Phone_Auth_First_Page.dart';
 import 'package:tro/Authentification/Signup.dart';
 import 'package:tro/Authentification/loginOrsignup.dart';
-import 'package:tro/clientregestrationscreen.dart';
+import 'package:tro/Authentification/profile.dart';
+ 
 import 'package:tro/intro_screens/introductionscreen.dart';
 import 'package:tro/navigateur.dart';
 import 'package:tro/screens/Profil/Noprofilescreen.dart';
+import 'package:tro/screens/Profil/profile_screen.dart';
 
 
 
@@ -36,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/pageThree': (context) => LoginChoice(),
         '/pageFour': (context) =>  AgencySignup(),
       },
-      home:                 Login()
+      home:  IntroductionScreen()
     );
   }
 }

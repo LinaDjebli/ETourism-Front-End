@@ -4,12 +4,20 @@ class textfiled extends StatefulWidget {
   final TextEditingController controller;
   final String hintext;
   final bool obscuretext;
+  final String errortext ;
+  final bool error ;
+  
+  var method; 
+  
 
   textfiled({
     Key? key,
     required this.controller,
     required this.hintext,
     required this.obscuretext,
+    required this.errortext,
+    required this.error,
+    required this.method
   }) : super(key: key);
 
   @override
@@ -47,7 +55,10 @@ class _textfiledState extends State<textfiled> {
           ),
           fillColor: const Color.fromARGB(255, 255, 255, 255),
           filled: true,
+          errorText:widget.error ? null : widget.errortext,
+          
         ),
+        onChanged : widget.method
       ),
     );
   }

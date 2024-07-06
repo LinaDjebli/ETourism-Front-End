@@ -1,9 +1,14 @@
 import 'dart:convert';
+ 
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:tro/modules/client.dart';
 import 'package:tro/modules/agency.dart';
 import 'package:tro/modules/guide.dart';
-import 'package:tro/constants/Size.dart';  // Import your constants file
+import 'package:tro/constants/Size.dart';  
+import 'package:dio/dio.dart';
+import 'package:tro/navigateur.dart';    // Import your constants file
 
 class ApiService {
     
@@ -20,45 +25,114 @@ class ApiService {
     } else {
       // Handle error
       
-    Map<String, dynamic> responseData = jsonDecode(response.body);
+   Map<String, dynamic> responseData = jsonDecode(response.body);
       print('Error: ${response.statusCode}');
       print('Body: ${response.body}');
     }
      return response ;
   }
+
+
+   Future<http.Response> authenticateUser(String email, String password) async {
+   
+    var response = await http.post(
+       Uri.parse('$baseUrl/login/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
+    );
+    
+    return  response;
+     
+  }
     
 
-  Future<void> registerAgency(Agency agency) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/signup/agency/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(agency.toJson()),
-    );
 
+Future<Response?> registerAgency(Agency agency) async {
+  final String url = 'http://192.168.100.53:8000/api/signup/agency/';
+  Dio dio = Dio();
+
+  FormData formData = FormData.fromMap({
+    ...agency.toJson(),
+    'agency_licenses': agency.agencyLicenses != null
+        ? await MultipartFile.fromFile(
+            agency.agencyLicenses!.path,
+            filename: agency.agencyLicenses!.path.split('/').last,
+          )
+        : null,
+    'agency_profile_picture': agency.agencyProfilePicture != null
+        ? await MultipartFile.fromFile(
+            agency.agencyProfilePicture!.path,
+            filename: agency.agencyProfilePicture!.path.split('/').last,
+          )
+        : null,
+  });
+   var response = await dio.post(url, data: formData);
+  try {
+   
     if (response.statusCode == 201) {
-      // Agency registered successfully
+      print('Registration request submitted.');
+      print(response.headers);
     } else {
-      // Handle error
-      print('Error: ${response.statusCode}');
-      print('Body: ${response.body}');
+      print('Registration failed with status: ${response.statusCode}.');
+      print('Body: ${response.data}'); // Print the response body to see the detailed error
     }
+  } on DioError catch (e) {
+    if (e.response != null) {
+      print('DioError: ${e.response!.statusCode} - ${e.response!.data}');
+    } else {
+      print('DioError: ${e.message}');
+    }
+  } catch (e) {
+    print('Error: $e');
   }
+  return response ; 
+}
 
-  Future<void> registerGuide(Guide guide) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/signup/guide/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(guide.toJson()),
-    );
-
+  Future<Response?> registerGuide(Guide guide) async {
+    final String url = 'http://192.168.100.53:8000/api/signup/guide/';
+     Dio dio = Dio();
+ 
+  FormData formData = FormData.fromMap({
+    ... guide.toJson(),
+    'guide_licenses':  guide.guideLicenses != null
+        ? await MultipartFile.fromFile(
+             guide.guideLicenses!.path,
+            filename:  guide.guideLicenses!.path.split('/').last,
+          )
+        : null,
+    'guide_profile_picture':  guide.guideProfilePicture != null
+        ? await MultipartFile.fromFile(
+            guide.guideProfilePicture!.path,
+            filename: guide.guideProfilePicture!.path.split('/').last,
+          )
+        : null,
+  });
+   var response = await dio.post(url, data: formData);
+  try {
+   
     if (response.statusCode == 201) {
-      // Guide registered successfully
+     
+      print('Registration request submitted.');
+      print(response.headers);
+      return response ; 
+       
     } else {
-      // Handle error
-      print('Error: ${response.statusCode}');
-      print('Body: ${response.body}');
+      print('Registration failed with status: ${response.statusCode}.');
+      print('Body: ${response.data}'); 
+      return response ; // Print the response body to see the detailed error
     }
+  } on DioError catch (e) {
+    if (e.response != null) {
+      print('DioError: ${e.response!.statusCode} - ${e.response!.data}');
+    } else {
+      print('DioError: ${e.message}');
+    }
+  } catch (e) {
+    print('Error: $e');
   }
+  return response;
+  
+}
 
 
 }

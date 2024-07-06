@@ -1,9 +1,14 @@
 import 'dart:io';
 
+import 'package:email_validator/email_validator.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
+//import 'package:phone_verification/phone_verification.dart';
 import 'package:tro/Authentification/Signup.dart';
 import 'package:tro/Authentification/login.dart';
 import 'package:tro/Componants/List_Of_States.dart';
@@ -16,31 +21,144 @@ import 'package:tro/Authentification/loginOrsignup.dart';
 import 'package:tro/Authentification/signin.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tro/constants/Size.dart';
-
+import 'package:tro/modules/guide.dart';
+import 'package:tro/navigateur.dart';
+import 'package:tro/services/Authservice.dart';
+import 'package:url_launcher/url_launcher.dart';
+//import 'package:phone_verification/phone_verification.dart';
+ 
 class GuideSignup extends StatefulWidget {
-  const GuideSignup({super.key});
+  
+TextEditingController deteofbirth = _GuideSignup().datecontroller;
+TextEditingController description = _GuideSignup().whatDoYouDo; 
+bool gender = _GuideSignup().ismen;
+TextEditingController location = _GuideSignup().location;
+List<String> keys = _GuideSignup().finalchoice;
+Uri licences = _GuideSignup().filecontroller;
+File? licencesfile  = _GuideSignup()._licenseFile;
+TextEditingController phonenumber = _GuideSignup().phoneController;
+   GuideSignup({super.key});
   @override
   State<StatefulWidget> createState() {
     ;
     // TODO: implement createState
     return _GuideSignup();
   }
+  setState(){
+    if(_GuideSignup()._licenseFile != null) {
+      licencesfile = _GuideSignup()._licenseFile;
+    }
+
+  }
 }
 
 class _GuideSignup extends State<GuideSignup> {
   List<String> selectedItems = [];
-  TextEditingController datecontroller = TextEditingController();
-  TextEditingController _controller = TextEditingController();
+ TextEditingController datecontroller = TextEditingController();
+  
   FocusNode _Focusenode = FocusNode();
-  TextEditingController Lastnamecontroller = TextEditingController();
-   bool isSelected = false;
+   
+  String errorPhone = "Enter a valid phone number";
+  String errorWebsite = "Enter a valid website";
+  String errorLocation = "Enter a valid location";
+  String errorLicense = "Insert your license";
+  String errordescription = "please fill this field";
+  bool _isDataValide= true ;
+  bool _isLanguageSelected = true ; 
+  bool _isWebSiteValide = true ; 
+  bool isLicencesValide = true ; 
+  bool _isLocationValide =   true ;
+  bool _isDescriptionValide = true ; 
+  bool _isPhonenumbervalide = true ;
+
+  bool isSelected = false;
   bool ismen = false;
   bool iswoemn = false;
 
-  final WhatDoYouDo = TextEditingController();
- 
+
+  final TextEditingController whatDoYouDo = TextEditingController();
+   final TextEditingController  websiteController= TextEditingController();
+  final TextEditingController  location  = TextEditingController();
+  TextEditingController _controller = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  Uri filecontroller = Uri(); 
+
+void _validateDate(String value) {
+  if( datecontroller.text.isNotEmpty ){
+    setState(() {
+       _isDataValide = true ; 
+    });
+  }}
+  void _validateLocation(String value) {
+  if(  location.text.isNotEmpty ){
+    setState(() {
+          _isLocationValide = true ; 
+    });
+  }}
+  void _validatePhonenumber(String value) {
+  if(   phoneController.text.isNotEmpty ){
+    setState(() {
+         _isPhonenumbervalide = true ; 
+    });
+  }}
+  void _validateWebsite(String value) {
+  if(   websiteController.text.isNotEmpty ){
+    setState(() {
+         _isWebSiteValide = true ; 
+    });
+  }}
+  void _validateLicences(String value) {
+  if(   _controller.text.isNotEmpty ){
+    setState(() {
+         isLicencesValide = true ; 
+    });
+  }}
+ void _validateDescription(String value) {
+  if(    whatDoYouDo.text.isNotEmpty ){
+    setState(() {
+          _isDescriptionValide = true ; 
+    });
+  }}
+  
+  final _formKey = GlobalKey<FormState>();
+final Map<String, String> languageCodes = {
+    "English": "en",
+    "French": "fr",
+    "Italian": "it",
+    "Arabic": "ar",
+    // Add more key-value pairs as needed
+  };
+  File? _licenseFile;
+  File? _profilePicture;
+  final ImagePicker _picker = ImagePicker();
+  Future<void> _pickLicenseFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null) {
+      setState(() {
+        _licenseFile = File(result.files.single.path!);
+         filecontroller = _licenseFile!.uri;
+         _controller.text = _licenseFile!.path;
+         
+      });
+    }
+
+  }
+  Future<void> _pickProfilePicture() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _profilePicture = File(pickedFile.path);
+      });
+    }
+  }
+  final List<String> finalchoice = [];
   void _openMultiSelect() async {
-    final List<String> items = ["English", "Francais", "Italian", "Arabic"];
+    final List<String> items = ["English", "French", "Italian", "Arabic"];
+    
     final List<String>? results = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -52,20 +170,34 @@ class _GuideSignup extends State<GuideSignup> {
     );
 
     if (results != null) {
-      setState(() {
-        selectedItems = results;
-      });
-    }
+    setState(() {
+      selectedItems = results;
+      _isLanguageSelected = true;
+      finalchoice.clear(); // Clear the list to avoid duplicate entries
+      for (String item in results) {
+        languageCodes.forEach((key, value) {
+          if (item == key) {
+            finalchoice.add( value );
+          }
+        });
+      }
+    });
+  }else{
+    setState(() {
+       _isLanguageSelected =  false;
+    });
+      
   }
+}
 
   List<String> SelectedItems = [];
   @override
   Widget build(BuildContext context) {
-    bool isSelected = false;
+    //bool isSelected = false;
     // TODO: implement build
     return Scaffold(
        appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromARGB(255, 41, 72, 206),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -75,965 +207,1353 @@ class _GuideSignup extends State<GuideSignup> {
           },
 
         ),
-        title: Text("personnal informations"),),
+        title: Text("personnal informations",style: TextStyle(color: Colors.white),),),
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SafeArea(
           child: SingleChildScrollView(
-              child: Column(children: [
-        const SizedBox(height: 50),
-        Row(
-          children: [
-            SizedBox(
-              width: 30,
-            ),
-            Text(
-              "Fill in your informations",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                //font fam to add later
-              ),
-            ),
-          ],
-        ),
-        Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          SizedBox(
-            height: 150,
-            width: 180,
-            child: Image.asset("lib/photos/4722714.jpg"),
-          ),
-        ]),
-        SizedBox(
-          height: 25,
-        ),
-        Row(
-          children: [
-            SizedBox(
-              width: 30,
-            ),
-            Text(
-              "chose your spoken languages",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                //font fam to add later
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 25,
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10), // Rounded corners
-            ),
-            minimumSize: Size(350, 60),
-          ),
-          onPressed: _openMultiSelect,
-          child: const Text(
-            "Please select the languages you speak ",
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 56, 53, 53)),
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Wrap(
-          children: selectedItems
-              .map((item) => Chip(
-                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                    label: Text(item),
-                    onDeleted: () {
+              child:  Form(
+                 key: _formKey,
+                child: Column(children: [
+                        const SizedBox(height: 50),
+                        Row(
+                          children: [
+                            SizedBox(
+                width: 30,
+                            ),
+                            Text(
+                "Fill in your informations",
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  //font fam to add later
+                ),
+                            ),
+                          ],
+                        ),
+                        Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                          SizedBox(
+                            height: 150,
+                            width: 180,
+                            child: Image.asset("lib/photos/4722714.jpg"),
+                          ),
+                        ]),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                width: 30,
+                            ),
+                            Text(
+                "chose your spoken languages",
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  //font fam to add later
+                ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                             
+                            
+                            foregroundColor: Color.fromARGB(255, 255, 255, 255), backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10), // Rounded corners
+                            ),
+                            minimumSize: Size(350, 60),
+                          ),
+                          onPressed: _openMultiSelect,
+                          child: Text(
+                            "Please select the languages you speak ",
+                            style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: _isLanguageSelected? Color.fromARGB(255, 102, 102, 102):Color.fromARGB(255, 236, 60, 60)),
+                          ),
+                          
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Wrap(
+                          children: selectedItems
+                .map((item) => Chip(
+                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                      label: Text(item),
+                      onDeleted: () {
+                        setState(() {
+                          selectedItems.remove(item);
+                        });
+                      },
+                    ))
+                .toList(),
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                width: 30,
+                            ),
+                            Text(
+                            
+                "enter your birthdate ",
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  //font fam to add later
+                ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          
+                          child: TextField(
+                            
+                            focusNode: _Focusenode,
+                            controller: datecontroller,
+                            
+                            decoration: InputDecoration(
+                prefixIcon: Icon(
+                  Icons.calendar_month,
+                ),
+                hintText: " yyyy/MM/DD",
+                errorText: _isDataValide? null :"enter a valide birth date ",
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Color.fromARGB(108, 167, 165, 165),),
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Set borderRadius here
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Color.fromARGB(108, 255, 255, 255)),
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Set borderRadius here
+                ),
+                fillColor: const Color.fromARGB(255, 255, 255, 255),
+                filled: true,
+                            ),
+                            // readOnly: true,
+                             onTap: () async {
+                      _Focusenode.requestFocus();
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime(2025),
+                      );
+
+                      if (pickedDate != null) {
+                        setState(() {
+                          datecontroller.text = DateFormat("yyyy/MM/dd").format(pickedDate);
+                        });
+                      }
+                    }
+                          ),
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                width: 30,
+                            ),
+                            Text(
+                "Where are you currently located ? ",
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  //font fam to add later
+                ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                     
+                    SizebaleTextfield( onChanged: _validateLocation,errortext:errorLocation,eroorcond: _isLocationValide ,controller: location, sizefield:  1, max:  20, hintText:  "enter your location url  ", iconVisible:  false, iconOnPressed:  ()=>{}),
+                
+                        //regester now
+                        const SizedBox(
+                          height: 25,
+                        ),
+                   
+                         
+                SizedBox(
+                  height: 25,
+                ),
+                 Row(
+                          children: [
+                            SizedBox(
+                width: 30,
+                            ),
+                            Text(
+                "enter your website  ",
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 0, 0, 0),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  //font fam to add later
+                ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                     
+                     _buildTextField(
+                  controller: websiteController,
+                  hintText: "Website link",
+                 // labelText: "Enter agency website link",
+                  errorText: _isWebSiteValide? null :errorWebsite,
+                  onChanged:  _validateWebsite
+                ),
+                        //regester now
+                        const SizedBox(
+                          height: 25,
+                        ),
+                   
+                         
+                SizedBox(
+                  height: 25,
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 30,
+                    ),
+                    Text(
+                      "choose your gender  ",
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        //font fam to add later
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 25,
+                ),
+                SizedBox(
+                  width: 350,
+                  child: GestureDetector(
+                    onTap: () {
                       setState(() {
-                        selectedItems.remove(item);
+                        isSelected = true;
+                        ismen = true;
+                        iswoemn = false;
                       });
                     },
-                  ))
-              .toList(),
-        ),
-        SizedBox(
-          height: 25,
-        ),
-        Row(
-          children: [
-            SizedBox(
-              width: 30,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: isSelected && ismen && !iswoemn
+                            ? Colors.blue // Change color when selected
+                            : Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: isSelected && ismen && !iswoemn
+                                ? Colors.blue
+                                : Color.fromARGB(255, 255, 255, 255), // Change border color when selected
+                            width: 2), // Increase border width when selected
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 4,
+                            offset:
+                                const Offset(0, 2), // shadow direction: bottom
+                          ),
+                          BoxShadow(
+                            color: Color.fromARGB(255, 187, 186, 186)
+                                .withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 4,
+                            offset: const Offset(0, -2), // shadow direction: top
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Image.asset(
+                                "lib/photos/casual-life-3d-profile-picture-of-man-in-green-shirt-and-orange-hat.png",
+                                height: 60,
+                              )),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            " i am a man  ",
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0), fontSize: 16),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 25,
+                ),
+                SizedBox(
+                  width: 350,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isSelected = true;
+                        iswoemn = true;
+                        ismen = false;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: isSelected && iswoemn && !ismen
+                            ? Colors.blue // Change color when selected
+                            : Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: isSelected && iswoemn && !ismen
+                                ? Colors.blue
+                                : Color.fromARGB(255, 255, 255, 255), // Change border color when selected
+                            width: 2), // Increase border width when selected
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 4,
+                            offset:
+                                const Offset(0, 2), // shadow direction: bottom
+                          ),
+                          BoxShadow(
+                            color: Color.fromARGB(255, 172, 170, 170)
+                                .withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 4,
+                            offset: const Offset(0, -2), // shadow direction: top
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Image.asset(
+                                "lib/photos/3d-casual-life-avatar-girl-with-hair.png",
+                                height: 60,
+                              )),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            " i am a Women ",
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0), fontSize: 16),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 25,
+                ),
+                 Row(
+                  children: [
+                    SizedBox(width: 30),
+                    Text(
+                      "phone number",
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: IntlPhoneField(
+                        initialCountryCode: 'DZ',
+                        //onChanged: _validatePhonenumber,
+                        controller: phoneController,
+                        cursorColor: Color.fromARGB(255, 0, 0, 0),
+                        style:  TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                        decoration:  InputDecoration(
+                          errorText: _isPhonenumbervalide? null :errorPhone,
+                          labelStyle: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          hintStyle: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          fillColor: Color.fromARGB(255, 0, 0, 0),
+                          labelText: "Phone number",
+                          border: OutlineInputBorder(borderSide: BorderSide()),
+                        ),
+                      ),
+                    ),
+                   
+                 SizedBox(height: 25),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 30,
+                    ),
+                    Text(
+                      "What do you do ",
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        //font fam to add later
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 30,
+                    ),
+                    Text(
+                      "Describe yourslef in less than 200 character  ",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 161, 158, 158)
+                            .withOpacity(0.7),
+                
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        //font fam to add later
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                 
+                    SizebaleTextfield(onChanged: _validateDescription, errortext:errordescription,eroorcond:_isDescriptionValide , controller:whatDoYouDo, sizefield:  1, max:  200, hintText:  "Describe what you do ", iconVisible:  false, iconOnPressed:  ()=>{}),
+                
+                        //regester now
+                        const SizedBox(
+                          height: 25,
+                        ),
+                
+              
+                           SizedBox(height: 25),
+                Row(
+                  children: [
+                    SizedBox(width: 30),
+                    Text(
+                      "upload your agencie's licences ",
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                  SizedBox(height: 25),
+                _buildFilePicker(),
+                SizedBox(height: 25), 
+                  
+                
+                   ElevatedButton(
+                style: ButtonStyle(
+    backgroundColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+      if (states.contains(MaterialState.pressed)) {
+        return Colors.blue[800]; // Darker shade when pressed
+      }
+      return Colors.blue; // Default color
+    }),
+    foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Text color
+    padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.symmetric(horizontal: 30, vertical: 20)), // Padding
+    textStyle: MaterialStateProperty.all<TextStyle>(
+      TextStyle(fontSize: 18), // Text size
+    ),
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10), // Rounded corners
+      ),
+    ),
+  ),
+    onPressed: () {
+                         if(_isLanguageSelected== false)
+                         {
+                            setState((){
+                                _isLanguageSelected== !_isLanguageSelected;
+                            });
+                         }
+                         if(datecontroller.text.isEmpty){
+                          setState((){
+                                _isDataValide==  !_isDataValide;
+                            });
+                         }
+                         if(location.text.isEmpty){
+                             setState((){
+                                 _isLocationValide==  false;
+                            });
+                         }
+                         if(websiteController.text.isEmpty){
+                          setState((){
+                                 _isWebSiteValide==  !_isWebSiteValide;
+                            });
+                         }
+                         if(phoneController.text.isEmpty){
+                              setState((){
+                                 _isPhonenumbervalide==  !_isPhonenumbervalide;
+                            });
+                         }if(whatDoYouDo.text.isEmpty){
+
+                          setState((){
+                                 _isDescriptionValide==  !_isDescriptionValide;
+                            });
+
+                         }if(_controller.text.isEmpty){
+                                 setState((){
+                                 isLicencesValide==  !isLicencesValide;
+                            });
+                         }else{Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) =>  SignUpGuide(keys: finalchoice, birthdate:  datecontroller.text,location:  location.text , gender : ismen , phonenumber:  phoneController.text , licences: _licenseFile ,description: whatDoYouDo.text,website: location.text,)),
+            );};
+                         
+                      },
+    child: Text('Submit'),
+    ),
+    gapH18,
+                
+                        
+                      ]),
+              ))),
+    );
+  }
+   Widget _buildTextField({
+     bool isFocused = false,
+    required TextEditingController controller,
+    required String hintText,
+   // required String labelText,
+    bool obscureText = false,
+    String? errorText,
+    void Function(String)? onChanged,
+    Widget? suffixIcon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        onTap: () {
+          setState(() {
+            isFocused = !isFocused;
+          });
+        },
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          hintText: hintText,
+        //  labelText: labelText,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isFocused ? Colors.black : Color.fromARGB(255, 184, 184, 184),
             ),
-            Text(
-              "enter your birthdate ",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16,
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.black,
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          fillColor: const Color.fromARGB(255, 255, 255, 255),
+          filled: true,
+          errorText: errorText,
+          suffixIcon: suffixIcon,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilePicker() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ElevatedButton(
+            onPressed: _pickLicenseFile,
+            style: ElevatedButton.styleFrom(
+              primary: Colors.blue, // Button color
+              padding: EdgeInsets.symmetric(vertical: 12), // Increase button height
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0), // Rounded corners
+              ),
+              textStyle: TextStyle(
+                fontSize: 18, // Increase font size
                 fontWeight: FontWeight.bold,
-                //font fam to add later
               ),
             ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: TextField(
-            focusNode: _Focusenode,
-            controller: datecontroller,
+            child: Text(
+              'Select a file',
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+          SizedBox(height: 10), // Add some space between button and text
+          TextField(
+          controller: _controller,
+            readOnly: true,
             decoration: InputDecoration(
-              prefixIcon: Icon(
-                Icons.calendar_month,
-              ),
-              hintText: " MM/DD/YYYY",
+              hintText: _controller.text.isEmpty ? "no file selected" : _controller.text,
+               hintStyle: isLicencesValide? null : TextStyle(color: Colors.red),
               enabledBorder: OutlineInputBorder(
-                borderSide:
-                    BorderSide(color: Color.fromARGB(108, 167, 165, 165),),
-                borderRadius:
-                    BorderRadius.circular(10.0), // Set borderRadius here
+                borderSide: BorderSide(
+                  color: Color.fromARGB(255, 223, 222, 222),
+                ),
+                borderRadius: BorderRadius.circular(10.0),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide:
-                    BorderSide(color: Color.fromARGB(108, 255, 255, 255)),
-                borderRadius:
-                    BorderRadius.circular(10.0), // Set borderRadius here
+                borderSide: BorderSide(
+                  color: Color.fromARGB(255, 235, 234, 234),
+                ),
+                borderRadius: BorderRadius.circular(12.0),
               ),
               fillColor: const Color.fromARGB(255, 255, 255, 255),
               filled: true,
             ),
-            // readOnly: true,
-            onTap: () async {
-              _Focusenode.requestFocus();
-              DateTime? pickeddate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime(2025));
-
-              if (pickeddate != null) {
-                setState(() {
-                  datecontroller.text =
-                      DateFormat("MM/dd/yyyy").format(pickeddate);
-                });
-              }
-            },
           ),
-        ),
-        SizedBox(
-          height: 25,
-        ),
-        Row(
-          children: [
-            SizedBox(
-              width: 30,
-            ),
-            Text(
-              "Where are you currently located ? ",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                //font fam to add later
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 25,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            children: [
-              TypeAheadField(
-  noItemsFoundBuilder: (context) => const SizedBox(
-    height: 50,
-    child: Center(
-      child: Text("No Item Found "),
-    ),
-  ),
-  suggestionsCallback: (value) => ListOfStates.getSuggestion(value),
-  itemBuilder: (context, String suggestion) {
-    return Padding(
-      padding: EdgeInsets.all(6),
-      child: Text(
-        suggestion,
-        overflow: TextOverflow.ellipsis,
+        ],
       ),
     );
-  },
-  debounceDuration: const Duration(milliseconds: 400),
-  textFieldConfiguration: TextFieldConfiguration(
-    decoration: InputDecoration(
-      hintText: "search",
-      prefixIcon: Icon(Icons.search),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Color.fromARGB(108, 167, 165, 165),
-        ),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Color.fromARGB(108, 179, 177, 177),
-        ),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      fillColor: const Color.fromARGB(255, 255, 255, 255),
-      filled: true,
-    ),
-  ),
-  onSuggestionSelected: (String suggestion) {
-    setState(() {
-      _controller.text = suggestion;
+  }
+
+   
+}
+
+ 
+
+class SignUpGuide extends StatefulWidget {
+  SignUpGuide({super.key, required this.birthdate , required this.location , required this.licences , required this.phonenumber , required this.gender , required this.keys , required this.description, required this.website});
+   String birthdate ; 
+   String location ; 
+   File? licences ; 
+    String phonenumber; 
+   bool gender ; 
+   List<String> keys ; 
+    String description ;
+     String website ;
+  @override
+  State<SignUpGuide> createState() => _SignUpGuideState();
+}
+ class _SignUpGuideState extends State<SignUpGuide> {
+  final _formKey = GlobalKey<FormState>();
+  final firstnamecntr = TextEditingController();
+  final lastnamecntr = TextEditingController();
+  final emailController = TextEditingController();
+  final pwdcntr = TextEditingController();
+  final pwdcntr2 = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+ // final TextEditingController _phoneNumberController = TextEditingController();
+ File? _profilePicture;
+  final ImagePicker _picker = ImagePicker();
+  bool _isEmailValid = true;
+  bool _isPasswordValid = true;
+ // bool _isEmailNotUsed = false ; 
+  bool visibleIcon1 =  true;
+  bool visibleIcon2 =  true;
+  bool _isLastNameValid = true;
+  Icon passwordIcon1 = Icon(Icons.visibility_off);
+  Icon passwordIcon2 = Icon(Icons.visibility_off);
+  String passworderror1 = "must be 8 char plus numbers and special char ";
+  String finrstnameerror = "please fill in this field";
+  String lastnameerror = "please fill in this field";
+  String emailerror = "invalide email ";
+ String passworderror2 = "password dont match ";
+   final FocusNode _focusNode = FocusNode();
+  bool _isFirstNameValid = true;
+
+ 
+   
+    
+Future<void> _pickProfilePicture() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _profilePicture = File(pickedFile.path);
+      });
+    }
+  }
+  //final _authService = AuthService();
+ bool isSelected = false;
+  final Uri privacyPolicyUrl = Uri.parse("https://pub.dev/packages/url_launcher/install");
+
+  Future<void> launchPrivacyPolicy() async {
+    try {
+      await launchUrl(privacyPolicyUrl);
+    } catch (err) {
+      // Handle error if necessary
+    }
+  }
+ @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        // When the TextField loses focus, validate the content
+        setState(() {
+          _isFirstNameValid = firstnamecntr.text.isNotEmpty;
+            lastnamecntr.text.isEmpty? _isLastNameValid =  false :_isLastNameValid = true;
+
+
+        });
+      }
     });
-  },
-)
-
-            ],
-          ),
-        ),
-
-        
-         
-              SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "choose your grnder  ",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      //font fam to add later
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              SizedBox(
-                width: 350,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isSelected = true;
-                      ismen = true;
-                      iswoemn = false;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isSelected && ismen && !iswoemn
-                          ? Colors.blue // Change color when selected
-                          : Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color: isSelected && ismen && !iswoemn
-                              ? Colors.blue
-                              : Color.fromARGB(255, 255, 255, 255), // Change border color when selected
-                          width: 2), // Increase border width when selected
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset:
-                              const Offset(0, 2), // shadow direction: bottom
-                        ),
-                        BoxShadow(
-                          color: Color.fromARGB(255, 187, 186, 186)
-                              .withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset: const Offset(0, -2), // shadow direction: top
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                            padding: const EdgeInsets.all(1),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Image.asset(
-                              "lib/photos/casual-life-3d-profile-picture-of-man-in-green-shirt-and-orange-hat.png",
-                              height: 60,
-                            )),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          " i am a man  ",
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 0, 0, 0), fontSize: 16),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              SizedBox(
-                width: 350,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isSelected = true;
-                      iswoemn = true;
-                      ismen = false;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isSelected && iswoemn && !ismen
-                          ? Colors.blue // Change color when selected
-                          : Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color: isSelected && iswoemn && !ismen
-                              ? Colors.blue
-                              : Color.fromARGB(255, 255, 255, 255), // Change border color when selected
-                          width: 2), // Increase border width when selected
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset:
-                              const Offset(0, 2), // shadow direction: bottom
-                        ),
-                        BoxShadow(
-                          color: Color.fromARGB(255, 172, 170, 170)
-                              .withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset: const Offset(0, -2), // shadow direction: top
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                            padding: const EdgeInsets.all(1),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Image.asset(
-                              "lib/photos/3d-casual-life-avatar-girl-with-hair.png",
-                              height: 60,
-                            )),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          " i am a Women ",
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 0, 0, 0), fontSize: 16),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "What do you do ",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      //font fam to add later
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "Describe yourslef in less than 200 character  ",
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 161, 158, 158)
-                          .withOpacity(0.7),
-
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      //font fam to add later
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-               
-                  SizebaleTextfield(controller: WhatDoYouDo, sizefield:  1, max:  200, hintText:  "Describe what you do ", iconVisible:  false, iconOnPressed:  ()=>{}),
-
-        //regester now
-        const SizedBox(
-          height: 25,
-        ),
-
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              sigin(
-                onTap:()=>{
-                 
-                },
-                btntext: "         Back         ",
-              ),
-              sigin(
-                onTap:  ()=>{
-                   
-            Navigator.pushNamed(
-              context,
-              '/pageOne',
-              arguments: '/pageTwo',
-            )
-                },
-                btntext: "      continue       ",
-              ),
-            ],
-          ),
-        )
-      ]))),
-    );
   }
 
-  siginmethod() {}
-}
-
-class GuideSingupPageTwo extends StatefulWidget {
-  const GuideSingupPageTwo({super.key});
-
   @override
-  State<GuideSingupPageTwo> createState() => _GuideSingupPageTwoState();
-}
-
-class _GuideSingupPageTwoState extends State<GuideSingupPageTwo> {
-  bool isSelected = false;
-  bool ismen = false;
-  bool iswoemn = false;
-
-  final WhatDoYouDo = TextEditingController();
+  void dispose() {
+    firstnamecntr.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+     //  final RouteSettings settings = ModalRoute.of(context)!.settings;
+   // final String fromPage = settings.arguments as String;
+    // _phoneNumberController.text = "1234"; 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-             Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) =>     GuideSignup()),);
-          },
-
-        ),
-        title: Text("personnal informations"),),
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        body: SafeArea(
-            child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 50),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "Profile Details",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      //font fam to add later
-                    ),
-                  ),
-                ],
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                SizedBox(
-                  height: 150,
-                  width: 150,
-                  child: Image.asset(
-                      "lib/photos/0e6227f38b13826f71f6fce067df96f7-removebg-preview.png"),
-                ),
-              ]),
-              SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "Tell us a bit about yourself ",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      //font fam to add later
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "choose your grnder  ",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      //font fam to add later
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              SizedBox(
-                width: 350,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isSelected = true;
-                      ismen = true;
-                      iswoemn = false;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isSelected && ismen && !iswoemn
-                          ? Colors.blue // Change color when selected
-                          : Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color: isSelected && ismen && !iswoemn
-                              ? Colors.blue
-                              : Color.fromARGB(255, 255, 255, 255), // Change border color when selected
-                          width: 2), // Increase border width when selected
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset:
-                              const Offset(0, 2), // shadow direction: bottom
-                        ),
-                        BoxShadow(
-                          color: Color.fromARGB(255, 187, 186, 186)
-                              .withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset: const Offset(0, -2), // shadow direction: top
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                            padding: const EdgeInsets.all(1),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Image.asset(
-                              "lib/photos/casual-life-3d-profile-picture-of-man-in-green-shirt-and-orange-hat.png",
-                              height: 60,
-                            )),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          " i am a man  ",
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 0, 0, 0), fontSize: 16),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              SizedBox(
-                width: 350,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isSelected = true;
-                      iswoemn = true;
-                      ismen = false;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isSelected && iswoemn && !ismen
-                          ? Colors.blue // Change color when selected
-                          : Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color: isSelected && iswoemn && !ismen
-                              ? Colors.blue
-                              : Color.fromARGB(255, 255, 255, 255), // Change border color when selected
-                          width: 2), // Increase border width when selected
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset:
-                              const Offset(0, 2), // shadow direction: bottom
-                        ),
-                        BoxShadow(
-                          color: Color.fromARGB(255, 172, 170, 170)
-                              .withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset: const Offset(0, -2), // shadow direction: top
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                            padding: const EdgeInsets.all(1),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Image.asset(
-                              "lib/photos/3d-casual-life-avatar-girl-with-hair.png",
-                              height: 60,
-                            )),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          " i am a Women ",
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 0, 0, 0), fontSize: 16),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "What do you do ",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      //font fam to add later
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "Describe yourslef in less than 200 character  ",
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0)
-                          .withOpacity(0.7),
-
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      //font fam to add later
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-               
-                  SizebaleTextfield(controller: WhatDoYouDo, sizefield:  1, max:  200, hintText:  "Describe what you do ", iconVisible:  false, iconOnPressed:  ()=>{}),
-
-                   Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              sigin(
-                onTap: siginmethod(),
-                btntext: "         Back         ",
-              ),
-              sigin(
-                onTap:  ()=>{
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>   Login()),
-                      )
-                },
-                btntext: "      continue       ",
-              ),
-            ],
-          ),
-        )
-            ],
-          ),
-        )));
-  }
-
-  siginmethod() {}
-}
-
-class GuideSignupThree extends StatefulWidget {
-  const GuideSignupThree({super.key});
-
-  @override
-  State<GuideSignupThree> createState() => _GuideSignupThreeState();
-}
-
-class _GuideSignupThreeState extends State<GuideSignupThree> {
-  final Namecontroller = TextEditingController();
-  final LastNamecontroller = TextEditingController();
-  File? image;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
+       
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 25,
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 30,
-                ),
-                Text(
-                  "Choose a profile picture ",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    //font fam to add later
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            image != null
-                ? ClipOval(
-                    child: Image.file(
-                      image!,
-                      width: 160,
-                      height: 160,
-                      fit: BoxFit.cover,
+        child: SingleChildScrollView(
+          
+            child: Form(
+              key: _formKey,
+              child: Column(
+               
+                children: [
+                  
+                  const SizedBox(height: 50),
+                  Text(
+                    "Hello!",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontSize: 50,
                     ),
-                  )
-                : SizedBox(
-                    width: 200,
-                    height: 200,
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Welcome back ',
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 0, 0, 0),
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    'Create your account ',
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 0, 0, 0),
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                       SizedBox(
+                        width: 120,
+                        child: TextField(
+                         onTap: ()=>{setState(() {
+                             _isFirstNameValid = true;
+                         },)},
+                          cursorColor: Colors.black,
+                          controller: firstnamecntr,decoration: InputDecoration(labelText: 'first name  ',
+                          labelStyle: TextStyle(color:Colors.black),
+                           errorText: _isFirstNameValid ? null : finrstnameerror,
+                      
+                        //  errorText: firstnamecntr.text.isNotEmpty ?null : 'please fill in ',
+                        
+                           enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the enabled bottom border
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the focused bottom border
+          width: 2.0,
+        ),
+      ),
+      errorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the error bottom border
+        ),
+      ),
+      focusedErrorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the focused error bottom border
+          width: 2.0,
+          
+        ),
+        
+      ),),)),
+                         SizedBox(
+                          
+                        width: 120,
+                        child: TextField(
+                          onTap: ()=>{setState(() {
+                            _isLastNameValid = true;
+                          },)},
+                          cursorColor: Colors.black,
+                          controller:  lastnamecntr,decoration: InputDecoration(labelText: 'last name ',
+                            labelStyle: TextStyle(color:Colors.black),
+                               errorText: _isLastNameValid ? null :  lastnameerror,
+                        
+                           enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the enabled bottom border
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the focused bottom border
+          width: 2.0,
+        ),
+      ),
+      errorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the error bottom border
+        ),
+      ),
+      focusedErrorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the focused error bottom border
+          width: 2.0,
+          
+        ),
+        
+      ),),))
+                   
+                    ],
+                  ),
+                  SizedBox(height: 15),
+
+                    
+                  
+                       SizedBox(
+                        width: 120,
+                        child: TextField(
+                         onTap: ()=>{setState(() {
+                             _isFirstNameValid = true;
+                         },)},
+                          cursorColor: Colors.black,
+                          controller: firstnamecntr,decoration: InputDecoration(labelText: 'phonecode',
+                          labelStyle: TextStyle(color:Colors.black),
+                           errorText: _isFirstNameValid ? null : finrstnameerror,
+                      
+                        //  errorText: firstnamecntr.text.isNotEmpty ?null : 'please fill in ',
+                        
+                           enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the enabled bottom border
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the focused bottom border
+          width: 2.0,
+        ),
+      ),
+      errorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the error bottom border
+        ),
+      ),
+      focusedErrorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the focused error bottom border
+          width: 2.0,
+          
+        ),
+        
+      ),),)),
+                 SizedBox(
+                  width: 310,
+                   child: TextField(
+                    onTap: ()=>{
+                      setState(() {
+                        emailerror = "enter a valid email "; 
+                      },)
+                     
+                    },
+                    cursorColor: Colors.black,
+                                 controller: _emailController,
+                                 decoration: InputDecoration(
+                                   labelText: 'Email',
+                                   errorText:  _isEmailValid ?  null : emailerror,
+                                   enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the enabled bottom border
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the focused bottom border
+          width: 2.0,
+        ),
+      ),
+      errorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the error bottom border
+        ),
+      ),
+      focusedErrorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the focused error bottom border
+          width: 2.0,
+          
+        ),
+        
+      ),
+      labelStyle: TextStyle(color:Colors.black),
+    
+      fillColor: Color.fromARGB(255, 165, 165, 165),
+                                 ),
+                                 onChanged: _validateEmail,
+                               ),
+                 ),
+                  
+                  SizedBox(height: 15),
+               SizedBox(
+                width: 310,
+                 child: TextField(
+                  onTap: ()=> {
+                      setState(() {
+                        passworderror1 = "8 char plus niber and special char";
+                      },)
+                  },
+                               controller: _passwordController,
+                               obscureText:visibleIcon1 ? true : false,
+                               decoration: InputDecoration(
+                  labelText: 'Password',
+                  errorText: _isPasswordValid ? null : passworderror1,
+                               prefixIcon: Icon(Icons.lock)  ,
+                               suffixIcon:IconButton(
+                                color: Colors.black,
+                             onPressed: () {
+                               setState(() {
+                  visibleIcon1 = !visibleIcon1;
+                  passwordIcon1 = visibleIcon1
+                      ? const Icon(Icons.visibility_off)
+                      : const Icon(Icons.visibility);
+                               });
+                             },
+                             icon: passwordIcon1,
+                           ),
+
+                           enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the enabled bottom border
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the focused bottom border
+          width: 2.0,
+        ),
+      ),
+      errorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the error bottom border
+        ),
+      ),
+      focusedErrorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the focused error bottom border
+          width: 2.0,
+          
+        ),
+        
+      ),
+      labelStyle: TextStyle(color:Colors.black), ),
+                               
+                               
+                               onChanged: _validatePassword,
+                             ),
+               ),
+                  SizedBox(height: 15),
+
+                   SizedBox(
+                width: 310,
+                 child: TextField(
+                  cursorColor: Colors.black,
+                               controller: pwdcntr2 ,
+                               obscureText: visibleIcon2,
+                               decoration: InputDecoration(
+                  labelText: 'Password',
+                  errorText:  pwdcntr2.text == _passwordController.text ? null : passworderror2,
+                               prefixIcon: Icon(Icons.lock)  ,
+                               suffixIcon:IconButton(
+                                color: Colors.black,
+                             onPressed: () {
+                               setState(() {
+                  visibleIcon2 = !visibleIcon2;
+                  passwordIcon2 = visibleIcon2
+                      ? const Icon(Icons.visibility_off)
+                      : const Icon(Icons.visibility);
+                               });
+                             },
+                             icon: passwordIcon2,
+                           ),
+                           enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the enabled bottom border
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.black, // Set the color of the focused bottom border
+          width: 2.0,
+        ),
+      ),
+      errorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the error bottom border
+        ),
+      ),
+      focusedErrorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red, // Set the color of the focused error bottom border
+          width: 2.0,
+          
+        ),
+        
+      ),
+      labelStyle: TextStyle(color:Colors.black),
+            // Use the hint text from the widget
+        ),
+                               
+                             
+                             ),
+               ),
+               gapH14,
+                  
+                  const SizedBox(height: 20),
+                  sigin(
+                    onTap:()=>{ 
+                       
+                       if(_emailController.text.isEmpty ){
+                           setState(() => {
+                             
+                             _isEmailValid = false ,
+                             emailerror = "fill in your email ",
+                             _isPasswordValid = false , 
+                             passworderror1 = "fill in a password"
+                            
+
+                           },)
+
+                        
+                             
+                       }, 
+                       if( firstnamecntr.text.isEmpty ){
+                           setState(() => {
+                             _isFirstNameValid = false , 
+                             finrstnameerror = " fill in this"
+                            
+
+                           },)
+
+                        
+                             
+                       },  if(  lastnamecntr.text.isEmpty ){
+                           setState(() => {
+                              _isLastNameValid = false , 
+                             lastnameerror = " fill in this"
+                            
+
+                           },)
+
+                        
+                             
+                       },  if(  _passwordController.text.isEmpty ){
+                           setState(() => {
+                               _isPasswordValid = false , 
+                              passworderror1 = " fill in this"
+                            
+
+                           },)} else{
+                             _guideregester()
+                           }
+                      
+                      }
+,
+                    btntext: "Sign in ",
+                  ),
+                  const SizedBox(height: 25),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                        Text(
+                          'Or continue with ',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                
+                SizedBox(
+                  width: 340,
+                  height: 60,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isSelected = true;
+                       
+                      });
+                    },
                     child: Container(
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white)),
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: 200,
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                            color: 
+                                Color.fromARGB(255, 218, 218, 218), // Change border color when selected
+                            width: 2), // Increase border width when selected
+                       
+                        
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          gapW12,
+                          Icon(Icons.apple),
+                          const SizedBox(
+                            width: 30,
+                          ),
+                          Text(
+                            "Continue with apple  ",
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0), fontSize: 16),
+                          )
+                        ],
                       ),
                     ),
                   ),
-            SizedBox(
-              height: 25,
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 30,
                 ),
-                Text(
-                  "Confirm your username ",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    //font fam to add later
+             gapH16,
+              SizedBox(
+                  width: 340,
+                  height: 60,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isSelected = true;
+                       
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color:  // Change color when selected
+                            Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                            color: 
+                               Color.fromARGB(255, 218, 218, 218), // Change border color when selected
+                            width: 2), // Increase border width when selected
+                       
+                        
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //gapW12,
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Image.asset(
+                              "lib/photos/kisspng-computer-icons-google-pay-send-google-5b2c7faaee9f23.0947772515296429229774-removebg-preview.png",
+                              height: 50,
+                              width: 40,
+                            )),
+                          const SizedBox(
+                            width: 30,
+                          ),
+                          Text(
+                            " continue with Google ",
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0), fontSize: 16),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 30,
-                ),
-                Text(
-                  "confirm your first and last name  ",
-                  style: TextStyle(
-                    color: const Color.fromARGB(255, 239, 236, 236)
-                        .withOpacity(0.7),
-
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    //font fam to add later
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 30,
-                ),
-                Text(
-                  "First name ",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    //font fam to add later
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            textfiled(
-                controller: Namecontroller,
-                hintext: "First Name",
-                obscuretext: false),
-            SizedBox(
-              height: 25,
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 30,
-                ),
-                Text(
-                  "Last Name  ",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    //font fam to add later
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            textfiled(
-                controller: LastNamecontroller,
-                hintext: "Last Name",
-                obscuretext: false),
-            SizedBox(
-              height: 25,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  sigin(
-                    onTap: siginmethod(),
-                    btntext: "       Back       ",
-                  ),
-                  sigin(
-                    onTap: siginmethod(),
-                    btntext: "   Create Account   ",
+                  const SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Have an account  ? ",
+                        style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => loginOrsignup()),
+                          );
+                        },
+                        child: Text(
+                          "Log in  ",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      )),
+          ),
+        
+      ),
     );
   }
-
-  siginmethod() {}
-  Future pickImage(ImageSource source) async {
-    try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) {
-        return null;
-      }
-      final Imagepath = File(image.path);
-      setState(() {
-        this.image = Imagepath;
-        // ignore: empty_catches
-      });
-    } on PlatformException catch (e) {
-      print("Failed to pick an image $e");
-    }
+void _validateEmail(String value) {
+    setState(() {
+      _isEmailValid = EmailValidator.validate(value);
+    });
   }
+   
+   bool _isStrongPassword(String value) {
+    // Add your password strength validation logic here
+    // Example: Minimum length of 8, must contain uppercase, lowercase, number, and special character
+    return value.length >= 8 &&
+         
+        RegExp(r'[a-z]').hasMatch(value) &&
+        RegExp(r'[0-9]').hasMatch(value) &&
+        RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value);
+  }
+  void _validatePassword(String value) {
+    setState(() {
+      _isPasswordValid = _isStrongPassword(value);
+    });
+  }
+
+  
+
+ 
+
+ Future<void> _guideregester() async {
+   /* String g ; 
+  if(widget.gender==true){
+      g = "M";
+  }else{
+    g = 'F';
+  }*/
+     
+ if (widget.licences == null) {
+    print('License file is null.');
+    if (widget.keys != null) {
+        for (String item in widget.keys) {
+            print("keys are: $item");
+        }
+    } else {
+        print('Widget keys are null.');
+    }
+    return;
 }
+     Guide  guide =  Guide(
+     username: firstnamecntr.text+lastnamecntr.text, 
+     guideEmail:_emailController.text,
+     guidePhoneNumber: widget.phonenumber,
+     password: passworderror1, 
+     guideFirstName: firstnamecntr.text,
+     guideLastName: lastnamecntr.text, 
+     guideWebsite: widget.location, 
+     guideLicenses: widget.licences,
+     guideProfilePicture: _profilePicture, 
+     guideLocation: widget.location,
+     guideLanguages: widget.keys,
+     
+     gender: "M",
+     guidedateofbirth: widget.birthdate, 
+     guidedescription: widget.description,
+      
+       
+    );
+
+    final  respone =  await _apiService.registerGuide( guide);
+
+    if (respone?.statusCode == 221) {
+      // Navigate to the new page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeWrapper(), // Replace NewPage with your actual page widget
+        ),
+      );
+    }
+   // await guide.sendGuideData(guide);
+  }
+
+   final ApiService _apiService = ApiService();
+  
+}
+
+  
+    
+
+

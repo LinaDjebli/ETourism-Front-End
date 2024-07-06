@@ -1,8 +1,11 @@
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tro/Authentification/LOginChoice.dart';
+import 'package:tro/Authentification/profile.dart';
 import 'package:tro/Componants/CheckBox.dart';
 import 'package:tro/Componants/SquaretTile.dart';
 import 'package:tro/Componants/Passwordfield.dart';
@@ -11,22 +14,25 @@ import 'package:tro/Authentification/signin.dart';
 import 'package:tro/Componants/textfiled.dart';
 import 'package:tro/constants/Size.dart';
 import 'package:tro/modules/client.dart';
+import 'package:tro/Authentification/GuideSignup.dart';
+import 'package:tro/modules/guide.dart';
 //import 'package:tro/modules/User.dart';
 import 'package:tro/navigateur.dart';
+import 'package:tro/screens/Profil/profile_screen.dart';
 import 'package:tro/services/Authservice.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:email_validator/email_validator.dart'; 
 
-class SignupPage extends StatefulWidget {
-  SignupPage({super.key});
 
+class SignupPage extends StatefulWidget {
+  SignupPage({super.key });
+  
   @override
   State<SignupPage> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
-
   final firstnamecntr = TextEditingController();
   final lastnamecntr = TextEditingController();
   final emailController = TextEditingController();
@@ -35,7 +41,8 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
- 
+ File? _profilePicture;
+  final ImagePicker _picker = ImagePicker();
   bool _isEmailValid = true;
   bool _isPasswordValid = true;
   bool _isEmailNotUsed = false ; 
@@ -52,7 +59,14 @@ class _SignupPageState extends State<SignupPage> {
    final FocusNode _focusNode = FocusNode();
   bool _isFirstNameValid = true;
 
-
+Future<void> _pickProfilePicture() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _profilePicture = File(pickedFile.path);
+      });
+    }
+  }
   //final _authService = AuthService();
  bool isSelected = false;
   final Uri privacyPolicyUrl = Uri.parse("https://pub.dev/packages/url_launcher/install");
@@ -425,7 +439,7 @@ class _SignupPageState extends State<SignupPage> {
                               passworderror1 = " fill in this"
                             
 
-                           },)}else{
+                           },)} else{
                             _registerClient()
                            }
                       
@@ -562,6 +576,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       TextButton(
                         onPressed: () {
+                         // ProfileScreen(name : firstnamecntr , lastname: lastnamecntr,email: emailController,);
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => loginOrsignup()),
@@ -647,6 +662,7 @@ void _validateEmail(String value) {
       email: _emailController.text,
       password: _passwordController.text,
       username: firstnamecntr.text + lastnamecntr.text,
+      profilePicture: " tro/lib/photos/default-avatar-icon-of-social-media-user-vector.jpg"
     );
 
     final response = await _apiService.registerClient(client);
@@ -685,6 +701,14 @@ void _validateEmail(String value) {
     }
   }
 }
+ 
 
+ 
+
+  
    final ApiService _apiService = ApiService();
 }
+
+  
+   final ApiService _apiService = ApiService();
+

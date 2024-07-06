@@ -11,6 +11,9 @@ class SizebaleTextfield extends StatefulWidget {
     required this.hintText,
     required this.iconVisible,
     required this.iconOnPressed,
+    required this.errortext,
+    required this.eroorcond,
+    required this.onChanged,
     //  required this.counter
   }) : super(key: key);
 
@@ -20,6 +23,9 @@ class SizebaleTextfield extends StatefulWidget {
   final String hintText;
   final bool iconVisible;
   final VoidCallback iconOnPressed;
+  final String errortext;
+  final bool eroorcond ; 
+  final Function(String) onChanged; 
   //final int counter;
 
   @override
@@ -50,17 +56,19 @@ class _SizebaleTextfieldState extends State<SizebaleTextfield> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding:  EdgeInsets.all(15.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextField(
+            onChanged:widget.onChanged,
             maxLines: 10,
             autocorrect: true,
             cursorColor: Colors.black,
             controller: widget.controller,
             minLines: widget.sizefield,
             decoration: InputDecoration(
+              errorText: widget.eroorcond?null : widget.errortext,
               suffixIcon: widget.iconVisible
                   ? IconButton(
                       onPressed: widget.iconOnPressed, icon: Icon(Icons.remove))
@@ -80,6 +88,7 @@ class _SizebaleTextfieldState extends State<SizebaleTextfield> {
                 borderRadius: BorderRadius.circular(20.0),
               ),
               hintText: widget.hintText,
+              
             ),
           ),
           //SizedBox(height: 10),

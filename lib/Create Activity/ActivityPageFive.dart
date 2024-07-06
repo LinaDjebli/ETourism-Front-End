@@ -192,13 +192,13 @@ class _ActivityPageFiveState extends State<ActivityPageFive> {
                             "if the costuer travel from place to place where does he go ? ",
                         Text: "Does the costumer change region ? ",
                         TextSize: 17),
-                    SizebaleTextfield(
+                  /*  SizebaleTextfield(
                         controller: UrlCotroller,
                         sizefield: 1,
                         max: 10,
                         hintText: "Url",
                         iconVisible: false,
-                        iconOnPressed: onpressed)
+                        iconOnPressed: onpressed)*/
                   ],
                 )
               }

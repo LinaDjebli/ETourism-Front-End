@@ -6,7 +6,7 @@ class Client {
   final String phoneNumber;
   final String email;
   final String password;
- // final String profilePicture;
+  final String profilePicture;
 
   Client({
     required this.username,
@@ -15,7 +15,7 @@ class Client {
     required this.phoneNumber,
     required this.email,
     required this.password,
-   // required this.profilePicture,
+   required this.profilePicture,
   });
 
   Map<String, dynamic> toJson() {
@@ -26,7 +26,7 @@ class Client {
       'phone_number': phoneNumber,
       'email': email,
       'password': password,
-      //'profile_picture': profilePicture,
+      'profile_picture': profilePicture,
     };
   }
 }

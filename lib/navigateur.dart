@@ -30,10 +30,17 @@ class _HomeWrapperState extends State<HomeWrapper> {
     super.dispose();
   }
 
+  void navigateToProfile(bool fromPage1) {
+    setState(() {
+      _currentIndex = 4; // Navigate to Profile tab (index 4)
+      _pageController.jumpToPage(4); // Jump to page directly
+      // You can add additional logic here based on `fromPage1` if needed
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      
       child: CupertinoTabScaffold(
         tabBar: CupertinoTabBar(
           items: const <BottomNavigationBarItem>[
@@ -84,11 +91,11 @@ class _HomeWrapperState extends State<HomeWrapper> {
               return CupertinoTabView(
                 builder: (context) {
                   return CupertinoPageScaffold(
-                    child: MyHome2Page(title: 'title',),
+                    child: MyHome2Page(title: 'Activity'),
                   );
                 },
               );
-              case 2:
+            case 2:
               return CupertinoTabView(
                 builder: (context) {
                   return CupertinoPageScaffold(
@@ -96,23 +103,22 @@ class _HomeWrapperState extends State<HomeWrapper> {
                   );
                 },
               );
-              case 3:
+            case 3:
               return CupertinoTabView(
                 builder: (context) {
                   return CupertinoPageScaffold(
-                    child: PlanningPage(title: 'title'),
+                    child: PlanningPage(title: 'Planning'),
                   );
                 },
               );
-               case 4:
+            case 4:
               return CupertinoTabView(
                 builder: (context) {
-                  return CupertinoPageScaffold(
-                    child:    NoProfile(),
-                  );
+                  // Use a conditional check to decide which screen to show
+                  //return fromPage1 ? NoProfile() : ProfileScreen();
+                  return ProfileScreen();
                 },
               );
-           
             default:
               return Container();
           }

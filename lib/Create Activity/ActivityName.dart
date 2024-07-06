@@ -35,8 +35,8 @@ class _ActivityNameState extends State<ActivityName> {
   void _addTextField() {
     final controller = TextEditingController();
     _controllers.add(controller);
-    _textFields.add(
-      SizebaleTextfield(
+   /* _textFields.add(
+     SizebaleTextfield(
         controller: controller,
         sizefield: 1,
         max: 80,
@@ -44,7 +44,7 @@ class _ActivityNameState extends State<ActivityName> {
         iconVisible: true,
         iconOnPressed: RemoveTextField,
       ),
-    );
+    );*/
 
     setState(() {});
   }
@@ -135,13 +135,13 @@ class _ActivityNameState extends State<ActivityName> {
               ),
             ],
           ),
-          SizebaleTextfield(
+         /* SizebaleTextfield(
               controller: NameController,
               sizefield: 1,
               max: 20,
               hintText: "Enter name",
               iconVisible: false,
-              iconOnPressed: icononpressed),
+              iconOnPressed: icononpressed),*/
           // gapH16,
           Wrap(
             children: [
@@ -181,13 +181,13 @@ class _ActivityNameState extends State<ActivityName> {
               ),
             ],
           ),
-          SizebaleTextfield(
+         /* SizebaleTextfield(
               controller: DescController,
               sizefield: 4,
               max: 500,
               hintText: "Decription...",
               iconVisible: false,
-              iconOnPressed: icononpressed),
+              iconOnPressed: icononpressed),*/
           Wrap(
             children: [
               Row(
@@ -226,7 +226,7 @@ class _ActivityNameState extends State<ActivityName> {
               ),
             ],
           ),
-          SizebaleTextfield(
+        /*  SizebaleTextfield(
               controller: HighlightOneColtroller,
               sizefield: 1,
               max: 80,
@@ -247,7 +247,7 @@ class _ActivityNameState extends State<ActivityName> {
             hintText: "Highlight",
             iconVisible: false,
             iconOnPressed: icononpressed,
-          ),
+          ),*/
 
           Column(
             mainAxisAlignment: MainAxisAlignment.end,

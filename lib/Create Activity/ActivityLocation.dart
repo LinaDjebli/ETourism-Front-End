@@ -219,13 +219,15 @@ class _ActivityLocationState extends State<ActivityLocation> {
                 ),
               ],
             ),
-            SizebaleTextfield(
+           /* SizebaleTextfield(
+              eroorcond: true,
+
                 controller: FeaturesColtroller,
                 sizefield: 3,
                 max: 60,
                 hintText: "Features included",
                 iconVisible: false,
-                iconOnPressed: iconOnPressed),
+                iconOnPressed: iconOnPressed),*/
             gapH18,
             Wrap(
               children: [
@@ -265,13 +267,13 @@ class _ActivityLocationState extends State<ActivityLocation> {
                 ),
               ],
             ),
-            SizebaleTextfield(
+          /*  SizebaleTextfield(
                 controller: FeaturesColtroller,
                 sizefield: 3,
                 max: 60,
                 hintText: "Features not included",
                 iconVisible: false,
-                iconOnPressed: iconOnPressed),
+                iconOnPressed: iconOnPressed),*/
             Container(
               alignment: Alignment.bottomRight,
               padding: const EdgeInsets.all(8.0),

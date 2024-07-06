@@ -8,7 +8,9 @@ import 'package:tro/Authentification/signin.dart';
 import 'package:tro/Componants/Passwordfield.dart';
 import 'package:tro/Componants/textfiled.dart';
 import 'package:tro/constants/Size.dart';
+import 'package:tro/navigateur.dart';
 import 'package:tro/services/Authservice.dart';
+ 
 
 class Login extends StatefulWidget {
   Login({super.key});
@@ -22,12 +24,15 @@ class _LoginState extends State<Login> {
   TextEditingController phonecntrlr = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
   bool _isPasswordValid = true;
   bool visibleIcon = true;
   Icon passwordIcon = Icon(Icons.visibility_off);
   bool _isEmailValid = true;
+  String passworderror =  '8 characters including number and special char';
 
+String emailerror = 'Enter a valid email address' ; 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -57,7 +62,7 @@ class _LoginState extends State<Login> {
         body: TabBarView(
           children: <Widget>[
             Form(
-              key: _formKey,
+              key: _formKey1,
               child: Column(
                 children: [
                   gapH32,
@@ -87,103 +92,112 @@ class _LoginState extends State<Login> {
                 ],
               ),
             ),
-            Column(
-              children: [
-                gapH32,
-                SizedBox(
-                  width: 310,
-                  child: TextFormField(
-                    cursorColor: Colors.black,
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      errorText: _isEmailValid ? null : 'Enter a valid email address',
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black,
+            Form(
+               key: _formKey2,
+              child: Column(
+                children: [
+                  gapH32,
+                  SizedBox(
+                    width: 310,
+                    child: TextFormField(
+                      cursorColor: Colors.black,
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        errorText: _isEmailValid ? null :emailerror ,
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          width: 2.0,
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 2.0,
+                          ),
                         ),
-                      ),
-                      errorBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.red,
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                      focusedErrorBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                            width: 2.0,
+                          ),
                         ),
+                        labelStyle: TextStyle(color: Colors.black),
+                        fillColor: Color.fromARGB(255, 165, 165, 165),
                       ),
-                      labelStyle: TextStyle(color: Colors.black),
-                      fillColor: Color.fromARGB(255, 165, 165, 165),
+                      onChanged: _validateEmail,
                     ),
-                    onChanged: _validateEmail,
                   ),
-                ),
-                SizedBox(height: 15),
-                SizedBox(
-                  width: 310,
-                  child: TextFormField(
-                    controller: _passwordController,
-                    obscureText: visibleIcon,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      errorText: _isPasswordValid ? null : '8 characters including number and special char',
-                      prefixIcon: Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        color: Colors.black,
-                        onPressed: () {
-                          setState(() {
-                            visibleIcon = !visibleIcon;
-                            passwordIcon = visibleIcon
-                                ? const Icon(Icons.visibility_off)
-                                : const Icon(Icons.visibility);
-                          });
-                        },
-                        icon: passwordIcon,
-                      ),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
+                  SizedBox(height: 15),
+                  SizedBox(
+                    width: 310,
+                    child: TextFormField(
+                      controller: _passwordController,
+                      obscureText: visibleIcon,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        errorText: _isPasswordValid ? null :passworderror,
+                        prefixIcon: Icon(Icons.lock),
+                        suffixIcon: IconButton(
                           color: Colors.black,
+                          onPressed: () {
+                            setState(() {
+                              visibleIcon = !visibleIcon;
+                              passwordIcon = visibleIcon
+                                  ? const Icon(Icons.visibility_off)
+                                  : const Icon(Icons.visibility);
+                            });
+                          },
+                          icon: passwordIcon,
                         ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black,
-                          width: 2.0,
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                      errorBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.red,
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 2.0,
+                          ),
                         ),
-                      ),
-                      focusedErrorBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                          ),
                         ),
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                            width: 2.0,
+                          ),
+                        ),
+                        labelStyle: TextStyle(color: Colors.black),
                       ),
-                      labelStyle: TextStyle(color: Colors.black),
+                      onChanged: _validatePassword,
                     ),
-                    onChanged: _validatePassword,
                   ),
-                ),
-                SizedBox(height: 15),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: sigin(
-                    onTap: _login,
-                    btntext: "Logffffffin",
-                  ),
-                )
-              ],
+                  SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: sigin(
+                      onTap:()=>{
+                        setState(() {
+                            _login();
+                            
+                        }),
+                      
+                      },
+                      btntext: "Logffffffin",
+                    ),
+                  )
+                ],
+              ),
             ),
           ],
         ),
@@ -213,34 +227,41 @@ class _LoginState extends State<Login> {
   }
 
   void _login() async {
-  if (_formKey.currentState?.validate() ?? false) {
-    _formKey.currentState?.save();
-    final response = await _authenticateUser(
+  if (_formKey2.currentState!.validate()) {
+   // _formKey.currentState?.save();
+    final response = await  _apiService.authenticateUser(
       emailController.text,
       _passwordController.text,
     );
-    print(response); // Add this line for debugging
-    if (response != null && response['token'] != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login successful')));
-      // Navigate to the next page or save the token
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login failed')));
+    if(response.statusCode == 200){
+       Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeWrapper(), // Replace NewPage with your actual page widget
+        ),
+      );
+    }else if (response.statusCode == 406){
+      setState(() {
+          _isPasswordValid = false ; 
+      passworderror = "wrong password ";
+      });
+    
+    }else if(response.statusCode == 404){
+      setState(() {
+         _isEmailValid = false ; 
+       emailerror = "email not found"; 
+      });
+      
+    }else if(response.statusCode == 405){
+      setState(() {
+         _isPasswordValid = false ; 
+      passworderror = "please fill in the form";
+      _isEmailValid = false ; 
+       emailerror = "please fill in the form "; 
+      });
+     
     }
   }
 }
-
-  Future<Map<String, dynamic>?> _authenticateUser(String email, String password) async {
-    final url = Uri.parse('http://192.168.100.53:8000/api/login/');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
-    );
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      return null;
-    }
-  }
+ final ApiService _apiService = ApiService();
 }
