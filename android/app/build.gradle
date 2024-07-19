@@ -23,7 +23,9 @@ if (flutterVersionName == null) {
 }
 
 android {
+    
     namespace "com.example.tro"
+    
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 

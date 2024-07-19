@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:http/http.dart' as http;
 //import 'package:phone_verification/phone_verification.dart';
 import 'package:tro/Authentification/Signup.dart';
 import 'package:tro/Authentification/login.dart';
@@ -23,8 +25,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tro/constants/Size.dart';
 import 'package:tro/modules/guide.dart';
 import 'package:tro/navigateur.dart';
+import 'package:tro/screens2/main_screen.dart';
 import 'package:tro/services/Authservice.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:dio/dio.dart';
+import 'dart:io';
 //import 'package:phone_verification/phone_verification.dart';
  
 class GuideSignup extends StatefulWidget {
@@ -33,7 +38,7 @@ TextEditingController deteofbirth = _GuideSignup().datecontroller;
 TextEditingController description = _GuideSignup().whatDoYouDo; 
 bool gender = _GuideSignup().ismen;
 TextEditingController location = _GuideSignup().location;
-List<String> keys = _GuideSignup().finalchoice;
+List<int> keys = _GuideSignup().finalchoice;
 Uri licences = _GuideSignup().filecontroller;
 File? licencesfile  = _GuideSignup()._licenseFile;
 TextEditingController phonenumber = _GuideSignup().phoneController;
@@ -121,13 +126,6 @@ void _validateDate(String value) {
   }}
   
   final _formKey = GlobalKey<FormState>();
-final Map<String, String> languageCodes = {
-    "English": "en",
-    "French": "fr",
-    "Italian": "it",
-    "Arabic": "ar",
-    // Add more key-value pairs as needed
-  };
   File? _licenseFile;
   File? _profilePicture;
   final ImagePicker _picker = ImagePicker();
@@ -155,7 +153,7 @@ final Map<String, String> languageCodes = {
       });
     }
   }
-  final List<String> finalchoice = [];
+  final List<int> finalchoice = [];
   void _openMultiSelect() async {
     final List<String> items = ["English", "French", "Italian", "Arabic"];
     
@@ -174,13 +172,9 @@ final Map<String, String> languageCodes = {
       selectedItems = results;
       _isLanguageSelected = true;
       finalchoice.clear(); // Clear the list to avoid duplicate entries
-      for (String item in results) {
-        languageCodes.forEach((key, value) {
-          if (item == key) {
-            finalchoice.add( value );
-          }
-        });
-      }
+       for( int i = 0 ; i < selectedItems.length ; i++){
+        finalchoice.add(i+1);
+       }
     });
   }else{
     setState(() {
@@ -190,7 +184,7 @@ final Map<String, String> languageCodes = {
   }
 }
 
-  List<String> SelectedItems = [];
+ 
   @override
   Widget build(BuildContext context) {
     //bool isSelected = false;
@@ -866,7 +860,7 @@ class SignUpGuide extends StatefulWidget {
    File? licences ; 
     String phonenumber; 
    bool gender ; 
-   List<String> keys ; 
+   List<int> keys ; 
     String description ;
      String website ;
   @override
@@ -1069,7 +1063,7 @@ Future<void> _pickProfilePicture() async {
 
                     
                   
-                       SizedBox(
+                     /*  SizedBox(
                         width: 120,
                         child: TextField(
                          onTap: ()=>{setState(() {
@@ -1103,9 +1097,9 @@ Future<void> _pickProfilePicture() async {
           color: Colors.red, // Set the color of the focused error bottom border
           width: 2.0,
           
-        ),
+        )
         
-      ),),)),
+      ),),)),*/
                  SizedBox(
                   width: 310,
                    child: TextField(
@@ -1312,7 +1306,8 @@ Future<void> _pickProfilePicture() async {
                             
 
                            },)} else{
-                             _guideregester()
+
+                               _guideregester()
                            }
                       
                       }
@@ -1497,17 +1492,12 @@ void _validateEmail(String value) {
  
 
  Future<void> _guideregester() async {
-   /* String g ; 
-  if(widget.gender==true){
-      g = "M";
-  }else{
-    g = 'F';
-  }*/
+  
      
  if (widget.licences == null) {
     print('License file is null.');
     if (widget.keys != null) {
-        for (String item in widget.keys) {
+        for (int item in widget.keys) {
             print("keys are: $item");
         }
     } else {
@@ -1519,7 +1509,7 @@ void _validateEmail(String value) {
      username: firstnamecntr.text+lastnamecntr.text, 
      guideEmail:_emailController.text,
      guidePhoneNumber: widget.phonenumber,
-     password: passworderror1, 
+     password:  _passwordController.text, 
      guideFirstName: firstnamecntr.text,
      guideLastName: lastnamecntr.text, 
      guideWebsite: widget.location, 
@@ -1535,21 +1525,88 @@ void _validateEmail(String value) {
        
     );
 
-    final  respone =  await _apiService.registerGuide( guide);
-
-    if (respone?.statusCode == 221) {
+    final  respone =  await _apiService.registerGuide(guide);
+try{ if (respone?. statusCode == 201) {
+      print('Form data sent successfully');
+      print(widget.keys);
       // Navigate to the new page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeWrapper(), // Replace NewPage with your actual page widget
+          builder: (context) => HomeWrapper2(), // Replace NewPage with your actual page widget
         ),
       );
-    }
-   // await guide.sendGuideData(guide);
+    }}catch(e){}
+   
+    //await guide.sendGuideData(guide);
   }
 
    final ApiService _apiService = ApiService();
+
+
+
+
+void sendFormData(List<String> selectedLanguages) async {
+  final String url = 'http://192.168.100.53:8000/api/signup/guide/';
+  Dio dio = Dio();
+
+  String g = widget.gender ? "M" : "F";
+
+  // Prepare the data payload
+  var data = {
+    'username': firstnamecntr.text + lastnamecntr.text,
+    'guide_email': _emailController.text,
+    'guide_first_name': firstnamecntr.text,
+    'guide_last_name': lastnamecntr.text,
+    'password':  _passwordController.text,
+    'guide_phone_number': widget.phonenumber,
+    'guide_website': widget.location,
+    'guide_location': widget.location,
+    'guide_gender': g,
+    'guide_dateofbirth': widget.birthdate,
+    'guide_description': widget.description,
+  };
+
+  // Create FormData object and add text fields
+  FormData formData = FormData.fromMap({
+    ...data,
+    'guide_licenses': widget.licences != null
+        ? await MultipartFile.fromFile(
+            widget.licences!.path,
+            filename: widget.licences!.path.split('/').last,
+          )
+        : null,
+    'guide_profile_picture': _profilePicture != null
+        ? await MultipartFile.fromFile(
+            _profilePicture!.path,
+            filename: _profilePicture!.path.split('/').last,
+          )
+        : null,
+  });
+
+  // Add each language index as a separate guide_languages field
+  
+
+  // Print formData for debugging
+  print('FormData: $formData');
+
+  // Send the request using Dio
+  try {
+    var response = await dio.post(url, data: formData);
+    if (response.statusCode == 201) {
+      print('Form data sent successfully');
+    } else {
+      print('Failed to send form data. Status code: ${response.statusCode}');
+      print('Response body: ${response.data}');
+      for (int i = 0; i < selectedLanguages.length; i++) {
+        print(selectedLanguages[i].toString());
+      }
+    }
+  } catch (e) {
+    print('Error sending form data: $e');
+  }
+}
+
   
 }
 

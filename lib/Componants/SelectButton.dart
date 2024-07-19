@@ -16,10 +16,12 @@ import 'package:flutter/material.dart';
 
 class SelectButton extends StatefulWidget {
   final String buttonText;
-  final List<ItemValue<int>> listOfItems;
+  final List<ItemValue> listOfItems;
   final String textOfList;
   final double sizeofwidth;
   final String Text;
+  
+   // Updated
 
   SelectButton(
       {Key? key,
@@ -35,23 +37,24 @@ class SelectButton extends StatefulWidget {
 }
 
 class _SelectButtonState extends State<SelectButton> {
-  List<ItemValue<int>> selectedItems = [];
+  List<String> selectedItems = [];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        MultiSelectDropDownClass<int>(
+        MultiSelectDropDownClass(
           sizewith: widget.sizeofwidth,
           Text: widget.Text,
           options: widget.listOfItems,
           onOptionSelected: (
-            List<ItemValue<int>> selectedOptions,
+            List<String> selectedOptions,
           ) {
             setState(() {
               selectedItems = selectedOptions;
             });
           },
+          
           optionTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -65,7 +68,7 @@ class _SelectButtonState extends State<SelectButton> {
           children: selectedItems
               .map((item) => Chip(
                     backgroundColor: const Color.fromARGB(255, 232, 232, 232),
-                    label: Text(item.label),
+                    label: Text(item),
                     onDeleted: () {
                       setState(() {
                         selectedItems.remove(item);
@@ -79,16 +82,15 @@ class _SelectButtonState extends State<SelectButton> {
   }
 }
 
-class ItemValue<T> {
+class ItemValue {
   final String label;
-  final T value;
+  final String value;
 
   const ItemValue({required this.label, required this.value});
 }
-
-class MultiSelectDropDownClass<T> extends StatefulWidget {
-  final List<ItemValue<T>> options;
-  final Function(List<ItemValue<T>> selectedOptions) onOptionSelected;
+class MultiSelectDropDownClass extends StatefulWidget {
+  final List<ItemValue> options;
+  final Function(List<String> selectedOptions) onOptionSelected;
   final double dropdownHeight;
   final TextStyle optionTextStyle;
   final Icon selectedOptionIcon;
@@ -109,16 +111,15 @@ class MultiSelectDropDownClass<T> extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _MultiSelectDropDownClassState<T> createState() =>
-      _MultiSelectDropDownClassState<T>();
+  _MultiSelectDropDownClassState createState() =>
+      _MultiSelectDropDownClassState();
 }
 
-class _MultiSelectDropDownClassState<T>
-    extends State<MultiSelectDropDownClass<T>> {
-  List<ItemValue<T>> selectedItems = [];
+class _MultiSelectDropDownClassState extends State<MultiSelectDropDownClass> {
+  List<String> selectedItems = [];
   bool isDropdownOpened = false;
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,18 +173,18 @@ class _MultiSelectDropDownClassState<T>
                   children: widget.options.map((item) {
                     return CheckboxListTile(
                       title: Text(item.label, style: widget.optionTextStyle),
-                      value: selectedItems.contains(item),
+                      value: selectedItems.contains(item.label), // Check if item label is selected
                       onChanged: (bool? value) {
                         setState(() {
                           if (value == true) {
-                            selectedItems.add(item);
+                            selectedItems.add(item.label); // Add item label to selectedItems
                           } else {
-                            selectedItems.remove(item);
+                            selectedItems.remove(item.label); // Remove item label from selectedItems
                           }
-                          widget.onOptionSelected(selectedItems);
+                          widget.onOptionSelected(selectedItems.toList()); // Pass selected labels
                         });
                       },
-                      secondary: selectedItems.contains(item)
+                      secondary: selectedItems.contains(item.label)
                           ? widget.selectedOptionIcon
                           : null,
                     );

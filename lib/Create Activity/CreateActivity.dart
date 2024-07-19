@@ -1,113 +1,116 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:tro/Componants/SizebaleTextField.dart';
-import 'package:tro/Componants/textfiled.dart';
-import 'package:tro/constants/Size.dart';
+import 'package:tro/Create%20Activity/ActivityCategory.dart';
 
-class CreateActivity extends StatefulWidget {
-  CreateActivity({super.key});
-
-  @override
-  State<CreateActivity> createState() => _CreateActivityState();
-}
-
-class _CreateActivityState extends State<CreateActivity> {
-  TextEditingController TextField1Controller = TextEditingController();
-  TextEditingController Controller2 = TextEditingController();
-  bool showHelpMessage = false;
+class IntroductionPage extends StatelessWidget {
+  const IntroductionPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    int characterCount = 0;
-
-    bool showHelpMessage = false;
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 176, 171, 171),
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text(
-          " ",
+        backgroundColor: Colors.blue.shade900,
+        title: const Text(
+          "Activity Creation Introduction",
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
-      body: SafeArea(
-          child: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            gapH12,
+            Text(
+              "Welcome to Activity Creation",
+              style: TextStyle(
+                color: Colors.blue.shade800,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+             Center(
+                child: Image.asset(
+                  'lib/photos/info.png', // Update with your image path
+                  height: 200,
+                ),
+              ),
+            SizedBox(height: 20),
             Row(
               children: [
-                SizedBox(
-                  width: 30,
+                  Icon(
+                  Icons.info_outline,
+                  color: Colors.blue.shade800,
                 ),
-                Text(
-                  "Welcome , users",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    //font fam to add later
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    "Take your time filling in the details. The more detailed and accurate the information, the better the experience for your customers.",
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ],
             ),
-            gapH12,
-            Wrap(
+            SizedBox(height: 20),
+            Row(
               children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 30,
+                 Icon(
+                  Icons.info_outline,
+                  color: Colors.blue.shade800,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    "Click on the exclamation marks (!) for more information on what to fill in each field.",
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: 18,
                     ),
-                    Expanded(
-                      child: Text(
-                        "Writing a detailed description about your activity here",
-                        style: TextStyle(
-                          color: const Color.fromARGB(255, 195, 194, 194),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          //font fam to add later
-                        ),
-                        softWrap:
-                            true, // Allows the text to wrap to the next line
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
-            gapH16,
+            SizedBox(height: 20),
             Row(
               children: [
-                Text("gggggggggg",
+                Icon(
+                  Icons.info_outline,
+                  color: Colors.blue.shade800,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    "The activity creation process might take around 30 minutes. Make sure you have all the necessary information ready.",
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 195, 194, 194),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    )),
+                      color: Colors.grey.shade700,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
               ],
             ),
-            gapH16,
-          /*  SizebaleTextfield(
-              sizefield: 2,
-              max: 12,
-              controller: Controller2,
-              hintText: "Enter your description here ",
-              iconVisible: false,
-              iconOnPressed: onPressed,
-            ),*/
-            gapH16,
+            SizedBox(height: 40),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ActivityCategory()));
+                },
+                child: Text("Start Creating Activity"),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue.shade900,
+                  onPrimary: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
-      )),
+      ),
     );
   }
-
-  void onPressed() {}
 }

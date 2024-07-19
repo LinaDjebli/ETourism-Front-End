@@ -79,7 +79,7 @@ class _ExamplePageState1 extends State<MapPage> {
               CulturePage1(),
               MyHome2Page(title: 'title'),
               MapPage(),
-              PlanningPage(title: 'title')
+              //PlanningPage(title: 'title')
             ],
           ),
         ],

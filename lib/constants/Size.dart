@@ -95,3 +95,8 @@ const gapH48 = SizedBox(
 const gapH64 = SizedBox(
   height: Sizes.p64,
 );
+
+const primaryColor = Color(0xFFEFD920);
+const secondaryColor = Colors.white;
+
+const defaultPadding = 16.0;

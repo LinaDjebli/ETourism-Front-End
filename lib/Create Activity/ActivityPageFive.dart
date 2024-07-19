@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:tro/Componants/My_Timeline.dart';
@@ -8,6 +6,8 @@ import 'package:tro/Componants/SelectChip.dart';
 import 'package:tro/Componants/SizebaleTextField.dart';
 import 'package:tro/Componants/Text&Field.dart';
 import 'package:tro/Create%20Activity/ActivityCategory.dart';
+import 'package:tro/Create%20Activity/ActivityPageSix.dart';
+import 'package:tro/Create%20Activity/Draft.dart' as Draft;
 import 'package:tro/constants/Size.dart';
 import 'package:tro/Authentification/signin.dart';
 import 'package:multi_dropdown/enum/app_enums.dart';
@@ -24,7 +24,8 @@ import 'package:flutter/material.dart';
 import "package:multi_dropdown/models/value_item.dart";
 
 class ActivityPageFive extends StatefulWidget {
-  const ActivityPageFive({super.key});
+  String draftid ;
+   ActivityPageFive({super.key, required this.draftid});
 
   @override
   State<ActivityPageFive> createState() => _ActivityPageFiveState();
@@ -33,6 +34,10 @@ class ActivityPageFive extends StatefulWidget {
 class _ActivityPageFiveState extends State<ActivityPageFive> {
   TextEditingController UrlCotroller = TextEditingController();
   MultiSelectController _controller = MultiSelectController();
+  List<String> people = [];
+   List<String>  food = [];
+    List<String>  transport = [];
+   
   List<String> selectedItems = [];
   int SlectedFood = 0;
   int SelectedTransport = 0;
@@ -89,36 +94,63 @@ class _ActivityPageFiveState extends State<ActivityPageFive> {
                 Text: "Who the costumer will interact with ",
                 TextSize: 17),
             gapH18,
-            SelectButton(
-              sizeofwidth: 350,
-              Text: "Select a person ",
-              buttonText: 'Select Options',
-              listOfItems: <ItemValue<int>>[
-                ItemValue(label: 'Guide', value: 1),
-                ItemValue(label: 'Instrocure', value: 2),
-                ItemValue(label: 'Driver', value: 3),
-                ItemValue(label: 'Host', value: 4),
-              ],
-              textOfList: 'Options',
-            ),
+  Column(
+  children: [
+    MultiSelectDropDownClass(
+      sizewith: 350,
+      Text: "Select a person",
+      options: <ItemValue>[
+        ItemValue(label: 'Guide', value: ""),
+        ItemValue(label: 'Instructor', value: ""),
+        ItemValue(label: 'Driver', value: ""),
+        ItemValue(label: 'Host', value: ""),
+      ],
+      onOptionSelected: (List<String> selectedLabels) {
+        setState(() {
+          people = selectedLabels; // Update selectedItems with selected labels
+          print(people); // Print the list of selected item labels
+        });
+      },
+      optionTextStyle: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Color.fromARGB(255, 0, 0, 0),
+      ),
+    ),
+    SizedBox(height: 10),
+    Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children: people
+          .map((itemLabel) => Chip(
+                backgroundColor: const Color.fromARGB(255, 232, 232, 232),
+                label: Text(itemLabel),
+                onDeleted: () {
+                  setState(() {
+                    people.remove(itemLabel); // Remove item label from selectedItems
+                   // widget.onOptionSelected(selectedItems.toList()); // Update selected labels
+                  });
+                },
+              ))
+          .toList(),
+    ),
+  ],
+),
+
+
+
+            SizedBox(width: 250, child: Divider(color:Colors.black,)),
             gapH16,
+            gapH12,
+            gapH12,
             TextandField(
                 tooltipText:
                     "Specify the availibily of food and what meal to expect ",
                 Text: "is Food included ?",
                 TextSize: 17),
             Column(children: <Widget>[
-              RadioListTile(
-                title: Text('Yes '),
-                value: 1,
-                groupValue: SlectedFood,
-                onChanged: (value) {
-                  setState(() {
-                    SlectedFood = value as int;
-                  });
-                },
-              ),
-              SizedBox(width: 350, child: Divider()),
+             
+             // SizedBox(width: 350, child: Divider()),
               RadioListTile(
                 title: Text('No'),
                 value: 2,
@@ -129,39 +161,76 @@ class _ActivityPageFiveState extends State<ActivityPageFive> {
                   });
                 },
               ),
-              if (SlectedFood == 1) ...{
-                SelectButton(
-                  Text: "Select Meals",
-                  sizeofwidth: 200,
-                  listOfItems: <ItemValue<int>>[
-                    ItemValue(label: 'Coffe', value: 1),
-                    ItemValue(label: ' Lunch', value: 2),
-                    ItemValue(label: 'Afternoon Coffee', value: 3),
-                    ItemValue(label: ' Diner', value: 4),
-                  ],
-                  textOfList: "",
-                  buttonText: "Food",
-                )
-              }
+               RadioListTile(
+                title: Text('Yes '),
+                value: 1,
+                groupValue: SlectedFood,
+                onChanged: (value) {
+                  setState(() {
+                    SlectedFood = value as int;
+                  });
+                },
+              ),
+                if (SlectedFood == 1) ...{
+                  Column(
+  children: [
+    MultiSelectDropDownClass(
+      sizewith: 350,
+      Text: "Select a meal",
+      options: <ItemValue>[
+        ItemValue(label: 'Lunch', value: ""),
+        ItemValue(label: 'Coffee', value: ""),
+        ItemValue(label: 'Dinner', value: ""),
+        ItemValue(label: 'snacks', value: ""),
+      ],
+      onOptionSelected: (List<String> selectedLabels) {
+        setState(() {
+          food = selectedLabels; // Update selectedItems with selected labels
+          print(food); // Print the list of selected item labels
+        });
+      },
+      optionTextStyle: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Color.fromARGB(255, 0, 0, 0),
+      ),
+    ),
+    SizedBox(height: 10),
+    Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children: food
+          .map((itemLabel) => Chip(
+                backgroundColor: const Color.fromARGB(255, 232, 232, 232),
+                label: Text(itemLabel),
+                onDeleted: () {
+                  setState(() {
+                    food.remove(itemLabel); // Remove item label from selectedItems
+                   // widget.onOptionSelected(selectedItems.toList()); // Update selected labels
+                  });
+                },
+              ))
+          .toList(),
+    ),
+  ],
+),
+
+
+              },
             ]),
-            gapH18,
+             SizedBox(width: 250, child: Divider(color:Colors.black,)),
+            gapH16,
+            gapH12,
+            gapH12,
+              
             TextandField(
                 tooltipText:
                     "Define if trnasportation is included in this activity ",
                 Text: "is Transport included ? ",
                 TextSize: 17),
             Column(children: <Widget>[
-              RadioListTile(
-                title: Text('Yes '),
-                value: 1,
-                groupValue: SelectedTransport,
-                onChanged: (value) {
-                  setState(() {
-                    SelectedTransport = value as int;
-                  });
-                },
-              ),
-              SizedBox(width: 350, child: Divider()),
+            
+             // SizedBox(width: 350, child: Divider()),
               RadioListTile(
                 title: Text('No'),
                 value: 2,
@@ -172,43 +241,92 @@ class _ActivityPageFiveState extends State<ActivityPageFive> {
                   });
                 },
               ),
-              if (SelectedTransport == 1) ...{
-                Column(
-                  children: [
-                    SelectButton(
-                      Text: "Select Transport",
-                      sizeofwidth: 200,
-                      listOfItems: <ItemValue<int>>[
-                        ItemValue(label: 'car', value: 1),
-                        ItemValue(label: ' bus', value: 2),
-                        ItemValue(label: 'Baot', value: 3),
-                        ItemValue(label: ' Train', value: 4),
-                      ],
-                      textOfList: "",
-                      buttonText: "Transport",
-                    ),
-                    TextandField(
-                        tooltipText:
-                            "if the costuer travel from place to place where does he go ? ",
-                        Text: "Does the costumer change region ? ",
-                        TextSize: 17),
-                  /*  SizebaleTextfield(
-                        controller: UrlCotroller,
-                        sizefield: 1,
-                        max: 10,
-                        hintText: "Url",
-                        iconVisible: false,
-                        iconOnPressed: onpressed)*/
-                  ],
-                )
-              }
+                RadioListTile(
+                title: Text('Yes '),
+                value: 1,
+                groupValue: SelectedTransport,
+                onChanged: (value) {
+                  setState(() {
+                    SelectedTransport = value as int;
+                  });
+                },
+
+              ),
+               if (SelectedTransport == 1) ...{
+                   Column(
+  children: [
+    MultiSelectDropDownClass(
+      sizewith: 350,
+      Text: "Select a Transportation",
+      options: <ItemValue>[
+        ItemValue(label: 'bus', value: ""),
+        ItemValue(label: 'airplaine', value: ""),
+        ItemValue(label: 'car', value: ""),
+        ItemValue(label: 'boat', value: ""),
+      ],
+      onOptionSelected: (List<String> selectedLabels) {
+        setState(() {
+           transport = selectedLabels; // Update selectedItems with selected labels
+          print(transport); // Print the list of selected item labels
+        });
+      },
+      optionTextStyle: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Color.fromARGB(255, 0, 0, 0),
+      ),
+    ),
+    SizedBox(height: 10),
+    Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children: transport
+          .map((itemLabel) => Chip(
+                backgroundColor: const Color.fromARGB(255, 232, 232, 232),
+                label: Text(itemLabel),
+                onDeleted: () {
+                  setState(() {
+                    transport.remove(itemLabel); // Remove item label from selectedItems
+                   // widget.onOptionSelected(selectedItems.toList()); // Update selected labels
+                  });
+                },
+              ))
+          .toList(),
+    ),
+  ],
+),
+                 //SizedBox(width: 250, child: Divider(color:Colors.black,)),
+              },
+             
             ]),
-            Container(
-              alignment: Alignment.bottomRight,
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                  width: 150, child: sigin(onTap: nextMethod, btntext: "Next")),
-            )
+            gapH28,
+             Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed:  nextMethod,
+              child: Text("Save and Exit"),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white, // background color
+                onPrimary: Colors.blue, // text color
+                side: BorderSide(color: Colors.blue), // border color
+              ),
+            ),
+            SizedBox(width: 20), // gapW20
+            ElevatedButton(
+              onPressed: nextMethod,
+              child: Text("Next"),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // background color
+                onPrimary: Colors.white, // text color
+              ),
+            ),
+          
+          ],
+          
+        ),
+          gapH28,
           ],
         ),
       )),
@@ -216,10 +334,53 @@ class _ActivityPageFiveState extends State<ActivityPageFive> {
   }
 
   nextMethod() {
+     _saveDraft();
     // ignore: prefer_const_constructors
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ActivityCategory()));
+        context, MaterialPageRoute(builder: (context) =>  ActivityPageSix(draftid: widget.draftid,)));
   }
 
   void onpressed() {}
+   Future<void> _saveDraft() async {
+  
+
+    
+ 
+  // Add non-empty highlight fields to the highlites list
+  
+  // Add existing highlights to set to check for duplicates
+  
+  // Add highlights from text fields
+   
+
+    Map<String, dynamic> data = {
+      'ActivityStaff': people.join(','),
+      'food':   food.join(','),
+      'transport':  transport.join(','),
+    };
+    print('Saving draft: $data'); // Print statement to check saved data
+    await Draft.saveDraft(widget.draftid, data);
+    Map<String, dynamic> fullDraftData = await  Draft.loadFullDraft(widget.draftid);
+    print('Full draft data: $fullDraftData');
+  }
+
+  Future<void> _loadDraft() async {
+    Map<String, dynamic> data = await  Draft.loadDraft(widget.draftid, ['ActivityStaff', 'food', 'transport']);
+    print('Loaded draft: $data'); // Print statement to check loaded data
+    setState(() {
+        people= data['ActivityStaff'].split(',');
+       food = data['food'].split(',');
+      transport = data['transport'].split(',');
+    });
+  }
+
+
+  void iconOnPressed() {}
+
+   
+  void icononpressed() {}
+
+   
+
+
 }

@@ -9,6 +9,7 @@ import 'package:tro/Componants/Passwordfield.dart';
 import 'package:tro/Componants/textfiled.dart';
 import 'package:tro/constants/Size.dart';
 import 'package:tro/navigateur.dart';
+import 'package:tro/screens2/main_screen.dart';
 import 'package:tro/services/Authservice.dart';
  
 
@@ -193,7 +194,7 @@ String emailerror = 'Enter a valid email address' ;
                         }),
                       
                       },
-                      btntext: "Logffffffin",
+                      btntext: "Login",
                     ),
                   )
                 ],
@@ -226,42 +227,55 @@ String emailerror = 'Enter a valid email address' ;
     });
   }
 
-  void _login() async {
+ void _login() async {
   if (_formKey2.currentState!.validate()) {
-   // _formKey.currentState?.save();
-    final response = await  _apiService.authenticateUser(
+    final response = await _apiService.authenticateUser(
       emailController.text,
       _passwordController.text,
     );
-    if(response.statusCode == 200){
-       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeWrapper(), // Replace NewPage with your actual page widget
-        ),
-      );
-    }else if (response.statusCode == 406){
-      setState(() {
-          _isPasswordValid = false ; 
-      passworderror = "wrong password ";
-      });
-    
-    }else if(response.statusCode == 404){
-      setState(() {
-         _isEmailValid = false ; 
-       emailerror = "email not found"; 
-      });
-      
-    }else if(response.statusCode == 405){
-      setState(() {
-         _isPasswordValid = false ; 
-      passworderror = "please fill in the form";
-      _isEmailValid = false ; 
-       emailerror = "please fill in the form "; 
-      });
+     var responseData = jsonDecode(response.body);
+      bool isGuide = responseData['is_guide'];
+      bool isAgency = responseData['is_agency'];
+      bool isClient = responseData['is_client'];
+
+try { if (response.statusCode == 201) {
      
-    }
+      if (isGuide || isAgency) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeWrapper2(),
+          ),
+        );
+      } else if (isClient) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeWrapper(),
+          ),
+        );
+      }
+    } else if (response.statusCode == 406) {
+      setState(() {
+        _isPasswordValid = false;
+        passworderror = "wrong password";
+      });
+    } else if (response.statusCode == 404) {
+      setState(() {
+        _isEmailValid = false;
+        emailerror = "email not found";
+      });
+    } else if (response.statusCode == 405) {
+      setState(() {
+        _isPasswordValid = false;
+        passworderror = "please fill in the form";
+        _isEmailValid = false;
+        emailerror = "please fill in the form";
+      });
+    }}catch(e){}
+   
   }
 }
+
  final ApiService _apiService = ApiService();
 }

@@ -10,7 +10,7 @@ class Agency {
    final String password2;
   final String agencyPhoneNumber;
   final String agencyWebsite;
-  final int numberOfEmployees;
+ /// final int numberOfEmployees;
   final String agencyLocation;
  final File? agencyLicenses;
   final File? agencyProfilePicture;
@@ -23,7 +23,7 @@ class Agency {
     required this.password2,
     required this.agencyPhoneNumber,
     required this.agencyWebsite,
-    required this.numberOfEmployees,
+    //required this.numberOfEmployees,
     required this.agencyLocation,
     this.agencyLicenses,
     this.agencyProfilePicture,
@@ -38,7 +38,7 @@ class Agency {
     'password2': password2 ,
     'agency_phone_number': agencyPhoneNumber,
     'agency_website': agencyWebsite,
-    'number_of_employees': numberOfEmployees,
+   // 'number_of_employees': numberOfEmployees,
     'agency_location': agencyLocation,
   };
 

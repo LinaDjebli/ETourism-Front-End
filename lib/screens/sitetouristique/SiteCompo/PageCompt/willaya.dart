@@ -1,573 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tro/screens/sitetouristique/SiteCompo/PageCompt/searchforu.dart';
-
-/*class WillayaPage extends StatefulWidget {
-  @override
-  _WillayaPage createState() => _WillayaPage();
-}
-
-class _WillayaPage extends State<WillayaPage> {
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
-        child: AppBar(
-          title: const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "Continue in this willaya ",
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-          backgroundColor: Color.fromARGB(255, 46, 42, 42),
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.white),
-        ),
-      ),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        scrollDirection: Axis.vertical,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                  ),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 1.6,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(30),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              top: 120.0,
-              left: 0.0,
-              right: 40.0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Things to do in',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 166, 164, 164),
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 5.0),
-                    //SizedBox(height: 5.0), // Space between texts
-                    Text(
-                      'Constantine',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 30,
-                        
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),SizedBox(height: 10.0),
-                                        Text(
-                      'Algeria\'s "City of Bridges,"\n blends history and beauty \n with its iconic architecture\n and vibrant culture, drawing\n visitors  to its picturesquestreets \n and UNESCO-listed sites.',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 166, 164, 164),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              right: 0,
-              left: MediaQuery.of(context).size.width * 0.65 - 45,
-              top: MediaQuery.of(context).size.height * 0.15 - 40,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 19, right: 18),
-                child: Container(
-                  height: 200,
-                  width: 90,
-                  child: 
-                   Row(
-                      children: [
-                        Container(
-                        height: 300,
-                        width: 150,
-                        child: 
-                        ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10),
-                          ),
-                          child: Image(
-                            fit: BoxFit.cover,
-                            image: AssetImage('assets/caption.jpg'),
-                          ),
-                        ),
-                      ),
-                      ] ),
-                ),
-              ),
-             ),
-Positioned(
-              right: 0,
-              left: MediaQuery.of(context).size.width * 0.08 - 45,
-              top: MediaQuery.of(context).size.height * 0.39 - 40,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18),
-    child: Container(
-     // height: 62,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Container(
-                height: 50,
-                width: 150,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(0, 33, 149, 243),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(196, 156, 155, 155), // Set the color of the border here
-                    width: 2, // Set the width of the border if needed
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child:
-Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween, // Align children to the start and end of the row
-  children: [
-    Text(
-      'Region',
-      style: TextStyle(
-        color: Colors.white,
-      ),
-      textAlign: TextAlign.center,
-    ),
-    Spacer(), // Pushes the icon to the rightmost position
-    Icon(
-      Icons.arrow_downward,
-      color: Color.fromRGBO(255, 255, 255, 0.528),
-    ),
-  ],
-),
-),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-),
-
-Positioned(
-  right: 0,
-  left: MediaQuery.of(context).size.width * 0.13 - 45,
-  top: MediaQuery.of(context).size.height * 0.52 - 40,
-  child: Padding(
-    padding: const EdgeInsets.only(top: 20.0, ),
-    child: Container(
-      decoration: BoxDecoration(
-        color: Color.fromARGB(45, 118, 118, 118), // Set background color to blue
-       // borderRadius: BorderRadius.circular(10),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                'assets/caption.jpg',
-                width: 140,
-                height: 140,
-              ),
-            ),
-            SizedBox(width: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5),
-                  child: Text(
-                    'ACTIVITY/PLACE NAME',
-                    style: TextStyle(
-                      color: Color.fromARGB(146, 255, 255, 255),
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5),
-                  child: Text(
-                    'Constantine : Discover \n old and European towns',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Text(
-                    '7 - 20 days',
-                    style: TextStyle(
-                      color: Color.fromARGB(129, 255, 255, 255),
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Text(
-                    'FROM 20 DA per person',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-),
-
-Positioned(
-  right: 0,
-  left: MediaQuery.of(context).size.width * 0.13 - 45,
-  top: MediaQuery.of(context).size.height * 0.68 - 40,
-  child: Padding(
-    padding: const EdgeInsets.only(top: 20.0, ),
-    child: Container(
-      decoration: BoxDecoration(
-        color: Color.fromARGB(57, 109, 109, 109), // Set background color to blue
-       // borderRadius: BorderRadius.circular(10),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                'assets/caption.jpg',
-                width: 140,
-                height: 140,
-              ),
-            ),
-            SizedBox(width: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5),
-                  child: Text(
-                    'ACTIVITY/PLACE NAME',
-                    style: TextStyle(
-                      color: Color.fromARGB(146, 255, 255, 255),
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5),
-                  child: Text(
-                    'Constantine : Discover \n old and European towns',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Text(
-                    '7 - 20 days',
-                    style: TextStyle(
-                      color: Color.fromARGB(129, 255, 255, 255),
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Text(
-                    'FROM 20 DA per person',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-),
-
-]
-),
-
-              
-        ),
-      );
-    
-  }
-}*/
-
-
-
-
-/*class WillayaPage extends StatefulWidget {
-  @override
-  _WillayaPageState createState() => _WillayaPageState();
-}
-
-class _WillayaPageState extends State<WillayaPage> {
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
-        child: AppBar(
-          title: const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "Mountainous areas ",
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-          backgroundColor: Color.fromARGB(255, 46, 42, 42),
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.white),
-        ),
-      ),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        scrollDirection: Axis.vertical,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                  ),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 1.6,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(30),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              top: 120.0,
-              left: 0.0,
-              right: 40.0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Algeria\'s mountains,\n like the Atlas and Saharan Atlas,\n are scenic and biodiverse,\n drawing nature lovers and adventurers.',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 166, 164, 164),
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 5.0),
-                    //SizedBox(height: 5.0), // Space between texts
-                    Text(
-                      'Constantine',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 30,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
- ],
-                ),
-              ),
-            ),
- Positioned(
-              right: 0,
-              left: MediaQuery.of(context).size.width * 0.05 - 45,
-              top: MediaQuery.of(context).size.height * 0.61 - 40,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 18, right: 18),
-                child: Container(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Container(
-                            height: 50,
-                            width: 150,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(0, 33, 149, 243),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Color.fromARGB(196, 156, 155, 155),
-                                width: 2,
-                              ),
-                            ),
-                            padding:
-                                EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Willaya',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                Spacer(),
-                                Icon(
-                                  Icons.arrow_downward,
-                                  color: Color.fromRGBO(255, 255, 255, 0.528),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              right: 0,
-              left: MediaQuery.of(context).size.width * 0.13 - 45,
-              top: MediaQuery.of(context).size.height * 0.32 - 40,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 99, right: 99),
-                child: ImageSlider(), 
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ImageSlider extends StatefulWidget {
-  @override
-  _ImageSliderState createState() => _ImageSliderState();
-}
-
-class _ImageSliderState extends State<ImageSlider> {
-  int _currentPage = 0;
-
-  final List<String> _images = [
-    'assets/caption.jpg',
-    'assets/caption.jpg',
-    'assets/caption.jpg',
-    'assets/caption.jpg',
-    'assets/caption.jpg',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 250,
-    
-      child: Stack(
-        children: [
-          PageView.builder(
-            itemCount: _images.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              return Transform.scale(
-                scale: _currentPage == index ? 1.1 : 1.0,
-                child: Image.asset(
-                  _images[index],
-                  fit: BoxFit.cover,
-                ),
-              );
-            },
-          ),
-          Positioned(
-            bottom: 10,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                _images.length,
-                (index) => AnimatedContainer(
-                  duration: Duration(milliseconds: 100),
-                  margin: EdgeInsets.symmetric(horizontal: 5),
-                  width: _currentPage == index ? 20 : 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: _currentPage == index ? const Color.fromARGB(255, 27, 87, 137) : Colors.grey,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import 'package:tro/screens/sitetouristique/SiteCompo/detail.dart';
 
 class WillayaPage extends StatefulWidget {
   @override
@@ -575,74 +7,157 @@ class WillayaPage extends StatefulWidget {
 }
 
 class _WillayaPage extends State<WillayaPage> {
-  Widget buildCategory0(String categoryName, VoidCallback onPressed, String imagePath, String imageText) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: 140, // Adjusted width
-        height: 280, // Adjusted height
-        margin: const EdgeInsets.only(right: 8),
-        child: Column(
-          children: [
-            Container(
-              width: 200, // Adjusted width
-              height: 180, // Adjusted height
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15), // Added border radius
-                image: DecorationImage(
-                  image: AssetImage(imagePath),
-                  fit: BoxFit.cover,
-                ),
+  void _showSortOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows the bottom sheet to be larger
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16.0),
+          height: MediaQuery.of(context).size.height * 0.8, // Set height to 80% of screen height
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Text(
+                    'Sort',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 48), // To balance the row since the IconButton takes some space
+                ],
               ),
-            ),
-            SizedBox(height: 6), // Space between image and text
-            Container(
-              width: double.infinity,
-              height: 10, // Height of the category text
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(0, 5, 5, 5),
-                borderRadius: BorderRadius.circular(5),
+              Divider(),
+              ListTile(
+                leading: Icon(Icons.sort_by_alpha),
+                title: Text('Alphabetical'),
+                onTap: () {
+                  // Add your sorting logic here
+                  Navigator.pop(context);
+                },
               ),
-              child:
-               Text(
-                categoryName,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12, // Adjusted font size
-                  fontFamily: 'Roboto',
-                  fontWeight: FontWeight.w500,
-                  height: 0.10,
-                  letterSpacing: 0.10,
-                ),
+              ListTile(
+                leading: Icon(Icons.star),
+                title: Text('Rating'),
+                onTap: () {
+                  // Add your sorting logic here
+                  Navigator.pop(context);
+                },
               ),
-            ),
-  
-          ],
-        ),
-      ),
+              ListTile(
+                leading: Icon(Icons.date_range),
+                title: Text('Date'),
+                onTap: () {
+                  // Add your sorting logic here
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
+  void _showRegionOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows the bottom sheet to be larger
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16.0),
+          height: MediaQuery.of(context).size.height * 0.8, // Set height to 80% of screen height
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Text(
+                    'Region',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 48), // To balance the row since the IconButton takes some space
+                ],
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(Icons.location_on),
+                title: Text('Region 1'),
+                onTap: () {
+                  // Add your region selection logic here
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.location_on),
+                title: Text('Region 2'),
+                onTap: () {
+                  // Add your region selection logic here
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.location_on),
+                title: Text('Region 3'),
+                onTap: () {
+                  // Add your region selection logic here
+                  Navigator.pop(context);
+                },
+              ),
+                            ListTile(
+                leading: Icon(Icons.location_on),
+                title: Text('Region 4'),
+                onTap: () {
+                  // Add your region selection logic here
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           title: const Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
                 "Continue in this willaya ",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               ),
             ],
           ),
-          backgroundColor: Color.fromARGB(255, 46, 42, 42),
+          backgroundColor: Color.fromARGB(255, 146, 191, 255),
           elevation: 0,
-          iconTheme: IconThemeData(color: Colors.white),
+          iconTheme: IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
         ),
       ),
       body: SingleChildScrollView(
@@ -654,12 +169,12 @@ class _WillayaPage extends State<WillayaPage> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                   child: Container(
                     height: MediaQuery.of(context).size.height * 1.6,
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: Color.fromARGB(255, 255, 255, 255),
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(30),
                       ),
@@ -669,39 +184,215 @@ class _WillayaPage extends State<WillayaPage> {
               ],
             ),
             Positioned(
-              right: 0,
-              left: MediaQuery.of(context).size.width * 0.15 - 45,
-              top: MediaQuery.of(context).size.height * 0.6 - 40,
+              bottom: 0,
+              right: MediaQuery.of(context).size.width * 0.12 - 45,
+              left: MediaQuery.of(context).size.width * 0.14 - 45,
+              top: MediaQuery.of(context).size.height * 0.15 - 40,
               child: Container(
-                width: 550,
-                height: 400,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      buildCategory0('For you', () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Searchforu()));
-                      }, 'assets/caption.jpg', ''),
-
-                      buildCategory0('Culture', () {}, 'assets/caption.jpg', ''),
-
-                      buildCategory0('Sports', () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Searchforu()));
-                      }, 'assets/caption.jpg', ''),
-
-                      buildCategory0('Nature', () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Searchforu()));
-                      }, 'assets/caption.jpg', ''),
-
-                      buildCategory0('Hotel', () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Searchforu()));
-                      }, 'assets/caption.jpg', ''),
-
-                      buildCategory0('Food', () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Searchforu()));
-                      }, 'assets/caption.jpg', ''),
-                    ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Things to do in',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 86, 85, 85),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                'Constantine',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              Text(
+                                'Algeria\'s "City of Bridges,"\n blends history and beauty \n with its iconic architecture\n and vibrant culture, drawing\n visitors to its picturesque streets \n and UNESCO-listed sites.',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 81, 80, 80),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Spacer(),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image(
+                              image: AssetImage('assets/caption.jpg'),
+                              height: 180,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    GestureDetector(
+                      onTap: () => _showRegionOptions(context),
+                      child: Container(
+                        height: 50,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(0, 33, 149, 243),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Color.fromARGB(196, 156, 155, 155),
+                            width: 2,
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Region',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            Spacer(),
+                            Icon(
+                              Icons.arrow_downward,
+                              color: Color.fromRGBO(62, 129, 229, 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        SizedBox(width: 10),
+                        Text(
+                          '296 activities found ',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 12,
+                          ),
+                        ),
+                        SizedBox(width: 2),
+                        Icon(
+                          Icons.find_replace_outlined,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          size: 15,
+                        ),
+                        Spacer(),
+                        GestureDetector(
+                          onTap: () => _showSortOptions(context),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Sort by',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 56, 129, 177),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Icon(
+                                Icons.swap_vert,
+                                color: Color.fromARGB(255, 56, 129, 177),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+GestureDetector(
+  onTap: () {
+    // Navigate to another page here
+     Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage1()));
+  },
+  child: Container(
+    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
+    decoration: BoxDecoration(
+      color: Color.fromARGB(174, 128, 167, 221),
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.asset(
+              'assets/caption.jpg',
+              width: 140,
+              height: 140,
+            ),
+          ),
+          SizedBox(width: 15),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5),
+                child: Text(
+                  'ACTIVITY/PLACE NAME',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 44, 44, 44),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
                   ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5),
+                child: Text(
+                  'Constantine : Discover \n old and European towns',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 0, 0, 0),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Text(
+                  '7 - 20 days',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 44, 44, 44),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 2),
+                child: Text(
+                  'FROM 20 DA per person',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 255, 62, 62),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+ 
+ ],
                 ),
               ),
             ),
@@ -711,3 +402,18 @@ class _WillayaPage extends State<WillayaPage> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:link_text/link_text.dart';
 import 'package:tro/Componants/My_Timeline.dart';
 import 'package:tro/Componants/SizebaleTextField.dart';
-import 'package:tro/Create%20Activity/ActivityCategory.dart';
+//import 'package:tro/Create%20Activity/ActivityCategory.dart';
+import 'package:tro/Create%20Activity/ActivityLocation.dart';
+import 'package:tro/Create%20Activity/Draft.dart' as  Draft; 
 import 'package:tro/constants/Size.dart';
 import 'package:tro/Authentification/signin.dart';
 
 class ActivityName extends StatefulWidget {
-  ActivityName({super.key});
-
+  String draftid ; 
+   
+  ActivityName({super.key , required this.draftid});
+//int id_category ; 
+//String type ; 
   @override
   State<ActivityName> createState() => _ActivityNameState();
 }
@@ -20,7 +25,7 @@ class _ActivityNameState extends State<ActivityName> {
   TextEditingController HighlightOneColtroller = TextEditingController();
   TextEditingController HighlightTwoColtroller = TextEditingController();
   TextEditingController HighlightThreeColtroller = TextEditingController();
-  final List<TextEditingController> _controllers = [];
+  List<TextEditingController> _controllers = [];
   final List<Widget> _textFields = [];
 
   @override
@@ -31,20 +36,24 @@ class _ActivityNameState extends State<ActivityName> {
     }
     super.dispose();
   }
-
+ @override
+  void initState() {
+    super.initState();
+    _loadDraft();
+  }
   void _addTextField() {
     final controller = TextEditingController();
     _controllers.add(controller);
-   /* _textFields.add(
+    _textFields.add(
      SizebaleTextfield(
         controller: controller,
         sizefield: 1,
         max: 80,
         hintText: "Highlight",
         iconVisible: true,
-        iconOnPressed: RemoveTextField,
+        iconOnPressed: RemoveTextField,errortext: '', eroorcond:  true , onChanged: (String ) {  },
       ),
-    );*/
+    );
 
     setState(() {});
   }
@@ -81,7 +90,7 @@ class _ActivityNameState extends State<ActivityName> {
                   ),
                   Expanded(
                     child: Text(
-                      "Continue Creating your activity ",
+                      "Activity Title ",
                       style: TextStyle(
                         color: Colors.blue.shade800,
                         fontSize: 30,
@@ -97,6 +106,7 @@ class _ActivityNameState extends State<ActivityName> {
             ],
           ),
           gapH16,
+         
           Wrap(
             children: [
               Row(
@@ -123,6 +133,8 @@ class _ActivityNameState extends State<ActivityName> {
                           padding: EdgeInsets.all(20),
                           message:
                               "What is the costumer facing name , make sure to include a comprehensive name ",
+                                waitDuration: Duration(seconds: 1),
+                    showDuration: Duration(seconds: 10),
                           child: Icon(
                             Icons.info_outline,
                             color: const Color.fromARGB(255, 27, 124, 235),
@@ -135,13 +147,13 @@ class _ActivityNameState extends State<ActivityName> {
               ),
             ],
           ),
-         /* SizebaleTextfield(
+          SizebaleTextfield(
               controller: NameController,
               sizefield: 1,
               max: 20,
               hintText: "Enter name",
               iconVisible: false,
-              iconOnPressed: icononpressed),*/
+              iconOnPressed: icononpressed, errortext: '', eroorcond: true, onChanged: (String ) {  },),
           // gapH16,
           Wrap(
             children: [
@@ -181,13 +193,13 @@ class _ActivityNameState extends State<ActivityName> {
               ),
             ],
           ),
-         /* SizebaleTextfield(
+          SizebaleTextfield(
               controller: DescController,
               sizefield: 4,
               max: 500,
               hintText: "Decription...",
               iconVisible: false,
-              iconOnPressed: icononpressed),*/
+              iconOnPressed: icononpressed, errortext: '', eroorcond: true, onChanged: (String ) {  },),
           Wrap(
             children: [
               Row(
@@ -226,20 +238,20 @@ class _ActivityNameState extends State<ActivityName> {
               ),
             ],
           ),
-        /*  SizebaleTextfield(
+         SizebaleTextfield(
               controller: HighlightOneColtroller,
               sizefield: 1,
               max: 80,
               hintText: "Highlight",
               iconVisible: false,
-              iconOnPressed: icononpressed),
+              iconOnPressed: icononpressed, errortext: '', eroorcond:  true , onChanged: (String ) { },),
           SizebaleTextfield(
               controller: HighlightTwoColtroller,
               sizefield: 1,
               max: 80,
               hintText: "Highlight",
               iconVisible: false,
-              iconOnPressed: icononpressed),
+              iconOnPressed: icononpressed,errortext: '', eroorcond:  true , onChanged: (String ) {  },),
           SizebaleTextfield(
             controller: HighlightThreeColtroller,
             sizefield: 1,
@@ -247,7 +259,7 @@ class _ActivityNameState extends State<ActivityName> {
             hintText: "Highlight",
             iconVisible: false,
             iconOnPressed: icononpressed,
-          ),*/
+          errortext: '', eroorcond:  true , onChanged: (String ) {   },),
 
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -279,17 +291,36 @@ class _ActivityNameState extends State<ActivityName> {
               gapH18,
             ],
           ),
-          Container(
-            alignment: Alignment.bottomRight,
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-                width: 150, child: sigin(onTap: nextMethod, btntext: "Next")),
-          )
+             Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed:  _saveDraft,
+              child: Text("Save and Exit"),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white, // background color
+                onPrimary: Colors.blue, // text color
+                side: BorderSide(color: Colors.blue), // border color
+              ),
+            ),
+            SizedBox(width: 20), // gapW20
+            ElevatedButton(
+              onPressed: nextMethod,
+              child: Text("Next"),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // background color
+                onPrimary: Colors.white, // text color
+              ),
+            ),
+          ],
+        ),
+         gapH12
         ]),
       )),
     );
   }
-
+ 
   void RemoveTextField() {
     if (_textFields.isNotEmpty) {
       _textFields.removeLast(); // Remove the last text field
@@ -297,11 +328,74 @@ class _ActivityNameState extends State<ActivityName> {
     }
     setState(() {});
   }
+  List<String> highlites = [] ;
+Future<void> _saveDraft() async {
+  
 
+   _controllers.add(HighlightOneColtroller);
+   _controllers.add(HighlightTwoColtroller);
+   _controllers.add(HighlightThreeColtroller);
+
+ highlites.clear();
+
+  // Add non-empty highlight fields to the highlites list
+   Set<String> existingHighlights = {};
+
+  // Add existing highlights to set to check for duplicates
+  for (var controller in _controllers) {
+    String text = controller.text.trim();
+    if (text.isNotEmpty) {
+      if (!existingHighlights.contains(text)) {
+        highlites.add(text);
+        existingHighlights.add(text);
+      }
+    }
+  }
+
+  // Add highlights from text fields
+  if (HighlightOneColtroller.text.isNotEmpty &&
+      !existingHighlights.contains(HighlightOneColtroller.text.trim())) {
+    highlites.add(HighlightOneColtroller.text.trim());
+    existingHighlights.add(HighlightOneColtroller.text.trim());
+  }
+  if (HighlightTwoColtroller.text.isNotEmpty &&
+      !existingHighlights.contains(HighlightTwoColtroller.text.trim())) {
+    highlites.add(HighlightTwoColtroller.text.trim());
+    existingHighlights.add(HighlightTwoColtroller.text.trim());
+  }
+  if (HighlightThreeColtroller.text.isNotEmpty &&
+      !existingHighlights.contains(HighlightThreeColtroller.text.trim())) {
+    highlites.add(HighlightThreeColtroller.text.trim());
+    existingHighlights.add(HighlightThreeColtroller.text.trim());
+  }
+
+    Map<String, dynamic> data = {
+      'title': NameController.text,
+      'description':  DescController .text,
+      'highlights': highlites.join(','),
+    };
+    print('Saving draft: $data'); // Print statement to check saved data
+    await Draft.saveDraft(widget.draftid, data);
+    Map<String, dynamic> fullDraftData = await  Draft.loadFullDraft(widget.draftid);
+    print('Full draft data: $fullDraftData');
+  }
+
+  Future<void> _loadDraft() async {
+    Map<String, dynamic> data = await  Draft.loadDraft(widget.draftid, ['title', 'description', 'highlights']);
+    print('Loaded draft: $data'); // Print statement to check loaded data
+    setState(() {
+       NameController.text = data['title'];
+      DescController .text = data['description'];
+      highlites = data['highlights'].split(',');
+    });
+  }
   void icononpressed() {}
   nextMethod() {
+_saveDraft();
+    
     // ignore: prefer_const_constructors
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ActivityCategory()));
+        
+        context, MaterialPageRoute(builder: (context) =>  ActivityLocation(draftid: widget.draftid,)));
   }
 }

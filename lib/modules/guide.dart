@@ -18,7 +18,7 @@ class Guide {
   final String guidedateofbirth;
   final File? guideLicenses;
   final File? guideProfilePicture;
- final List<String> guideLanguages;
+ final List<int> guideLanguages;
   
   final String gender ;
   final String guidedescription;
@@ -58,8 +58,8 @@ class Guide {
       'guide_description':guidedescription,
       
     };
-     for (String language in guideLanguages) {
-      json['guide_languages'] = language;
+     for (int i = 0 ; i< guideLanguages.length ; i++) {
+      json['guide_languages[$i]'] = guideLanguages[i];
     }
 
     if (guideLicenses != null) {
@@ -76,7 +76,7 @@ class Guide {
   }
 
 
-  Future<void> sendGuideData(Guide guide) async {
+  /*Future<void> sendGuideData(Guide guide) async {
   final url = Uri.parse('http://192.168.100.53:8000/api/signup/guide/');
   final request = http.MultipartRequest('POST', url);
 
@@ -113,5 +113,5 @@ class Guide {
   } else {
     print('Failed to send data');
   }
-}
+}*/
 }

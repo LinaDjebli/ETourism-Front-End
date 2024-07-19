@@ -27,6 +27,7 @@ class _TextandFieldState extends State<TextandField> {
               child: Row(
                 children: [
                   Text(
+                    
                     widget.Text,
                     style: TextStyle(
                       color: const Color.fromARGB(255, 14, 64, 122),

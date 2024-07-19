@@ -10,16 +10,21 @@ import 'package:tro/Componants/List_Of_States.dart';
 import 'package:tro/Componants/SquaretTile.dart';
 import 'package:tro/Componants/textfiled.dart';
 import 'package:tro/Authentification/LOginChoice.dart';
+import 'package:tro/Create%20Activity/ActivityPagenine.dart';
+import 'package:tro/Create%20Activity/ActivityPageten.dart';
 import 'package:tro/constants/Size.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:tro/globals.dart';
 import 'package:tro/modules/agency.dart';
 import 'package:tro/navigateur.dart';
+import 'package:tro/screens2/main_screen.dart';
 import 'package:tro/services/Authservice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
 class AgencySignup extends StatefulWidget {
-  AgencySignup({Key? key}) : super(key: key);
+  String? userid ;
+  AgencySignup({Key? key ,  this.userid}) : super(key: key);
 
   @override
   State<AgencySignup> createState() => _AgencySignupState();
@@ -620,7 +625,7 @@ Widget _buildFilePicker() {
       password2: passwordController.text,
       agencyPhoneNumber: phoneController.text,
       agencyWebsite: websiteController.text,
-      numberOfEmployees:  numberofemployyes,
+      //numberOfEmployees:  numberofemployyes,
       agencyLocation: locationController.text,
       agencyLicenses: _licenseFile!,
       agencyProfilePicture: _profilePicture,
@@ -631,7 +636,16 @@ Widget _buildFilePicker() {
     // Log response details for debugging
     print('Response status code: ${response?.statusCode}');
     print('Response body: ${response?.data}');
-      
+    globalUserId = response?.data['user_id']?.toString();
+
+    if (globalUserId != null) {
+      print('User ID: $globalUserId');
+    } else {
+      print('Error: User ID is null');
+    }
+   // ActivityPagenine(draftid: "",userid:userid ,);
+    //BookingListScreen(publisherId: userid);
+   print(widget.userid);
     // Handle different HTTP status codes
     if (response?.statusCode == 201) {
        String token = response?.data['access'];
@@ -640,7 +654,7 @@ Widget _buildFilePicker() {
        Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeWrapper(), // Replace NewPage with your actual page widget
+          builder: (context) => HomeWrapper2(), // Replace NewPage with your actual page widget
         ),
       );
     } else if (response?.statusCode == 400) {
@@ -743,5 +757,13 @@ class sigin extends StatelessWidget {
   }
 }
 
+  class DataProvider with ChangeNotifier {
+  String _id = '';
 
- 
+  String get id => _id;
+
+  void setId(String newId) {
+    _id = newId;
+    notifyListeners();
+  }
+}

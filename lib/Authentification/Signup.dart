@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tro/Authentification/LOginChoice.dart';
 import 'package:tro/Authentification/profile.dart';
 import 'package:tro/Componants/CheckBox.dart';
@@ -40,7 +42,7 @@ class _SignupPageState extends State<SignupPage> {
   final pwdcntr2 = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
  File? _profilePicture;
   final ImagePicker _picker = ImagePicker();
   bool _isEmailValid = true;
@@ -49,6 +51,7 @@ class _SignupPageState extends State<SignupPage> {
   bool visibleIcon1 =  true;
   bool visibleIcon2 =  true;
   bool _isLastNameValid = true;
+   bool _isPhoneValid = true ;
   Icon passwordIcon1 = Icon(Icons.visibility_off);
   Icon passwordIcon2 = Icon(Icons.visibility_off);
   String passworderror1 = "must be 8 char plus numbers and special char ";
@@ -56,9 +59,18 @@ class _SignupPageState extends State<SignupPage> {
   String lastnameerror = "please fill in this field";
   String emailerror = "invalide email ";
  String passworderror2 = "password dont match ";
+ String errorPhone = "Enter a valid phone number";
    final FocusNode _focusNode = FocusNode();
   bool _isFirstNameValid = true;
+  UserPreferences pref = UserPreferences();
 
+
+ void _validatePhonenumber(String value) {
+     if(phoneController.text.isNotEmpty){
+    setState(() {
+      _isPhoneValid = true ; 
+    });
+     }}
 Future<void> _pickProfilePicture() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -105,7 +117,7 @@ Future<void> _pickProfilePicture() async {
   Widget build(BuildContext context) {
        final RouteSettings settings = ModalRoute.of(context)!.settings;
     final String fromPage = settings.arguments as String;
-     _phoneNumberController.text = "1234"; 
+    // _phoneNumberController.text = "1234"; 
     return Scaffold(
        appBar: AppBar(
         backgroundColor: Colors.white,
@@ -279,8 +291,41 @@ Future<void> _pickProfilePicture() async {
                                  onChanged: _validateEmail,
                                ),
                  ),
-                  
-                  SizedBox(height: 15),
+
+                 gapH20,
+                 gapH16,
+                   Row(
+                  children: [
+                    SizedBox(width: 30),
+                    Text(
+                      "phone number",
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              Padding(
+                      padding:  EdgeInsets.symmetric(horizontal: 40),
+                      child: IntlPhoneField(
+                        initialCountryCode: 'DZ',
+                        controller: phoneController,
+                        cursorColor: Color.fromARGB(255, 0, 0, 0),
+                        style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                        decoration:  InputDecoration(
+                          labelStyle: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          hintStyle: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                          fillColor: Color.fromARGB(255, 0, 0, 0),
+                          labelText: "Phone number",
+                         // border: OutlineInputBorder(borderSide: BorderSide()),
+                          errorText: _isPhoneValid? null :  errorPhone ,
+                        ),
+                      ),
+                    ),
+                 SizedBox(height: 25),
+                //  SizedBox(height: 15),
                SizedBox(
                 width: 310,
                  child: TextField(
@@ -440,7 +485,8 @@ Future<void> _pickProfilePicture() async {
                             
 
                            },)} else{
-                            _registerClient()
+                            _registerClient(),
+                           
                            }
                       
                       }
@@ -600,6 +646,15 @@ Future<void> _pickProfilePicture() async {
       ),
     );
   }
+
+  Future<void> saveUserData(  String firstname ,String lastname, String email , String phonenumer) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  //await prefs.setInt("id", id);
+  await prefs.setString('firstname', firstname);
+  await prefs.setString('lastname', lastname);
+  await prefs.setString('email', email);
+  await prefs.setString('phonenumber', phonenumer);
+}
 void _validateEmail(String value) {
     setState(() {
       _isEmailValid = EmailValidator.validate(value);
@@ -658,16 +713,23 @@ void _validateEmail(String value) {
     Client client = Client(
       firstName: firstnamecntr.text,
       lastName: lastnamecntr.text,
-      phoneNumber: _phoneNumberController.text,
+      phoneNumber: phoneController.text,
       email: _emailController.text,
       password: _passwordController.text,
       username: firstnamecntr.text + lastnamecntr.text,
-      profilePicture: " tro/lib/photos/default-avatar-icon-of-social-media-user-vector.jpg"
+      //profilePicture: " tro/lib/photos/default-avatar-icon-of-social-media-user-vector.jpg"
     );
 
     final response = await _apiService.registerClient(client);
+     await saveUserData(firstnamecntr.text,lastnamecntr.text, _emailController.text, phoneController.text);   
+ printSavedUserData();
+     try{ if (response.statusCode == 201) {
+       var responseData = jsonDecode(response.body);
+      var userId = responseData['user_id']; 
 
-    if (response.statusCode == 201) {
+      print(userId);
+      
+      //print(saveUserData(userId,firstnamecntr.text,lastnamecntr.text, _emailController.text, _passwordController.text);
       // Navigate to the new page
       Navigator.pushReplacement(
         context,
@@ -698,7 +760,8 @@ void _validateEmail(String value) {
           ),
         );
       }
-    }
+    }}catch(e){} 
+   
   }
 }
  
@@ -712,3 +775,50 @@ void _validateEmail(String value) {
   
    final ApiService _apiService = ApiService();
 
+
+class UserPreferences {
+  static const _keyUsername = 'username';
+  static const _keyEmail = 'email';
+  static const _keyPhoneNumber = 'phone_number';
+
+  // Save user info to shared preferences
+  static Future<void> saveUser({
+    required String username,
+    required String email,
+    required String phoneNumber,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyUsername, username);
+    await prefs.setString(_keyEmail, email);
+    await prefs.setString(_keyPhoneNumber, phoneNumber);
+  }
+
+  // Read user info from shared preferences
+  static Future<Map<String, String>> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString(_keyUsername) ?? '';
+    final email = prefs.getString(_keyEmail) ?? '';
+    final phoneNumber = prefs.getString(_keyPhoneNumber) ?? '';
+    return {'username': username, 'email': email, 'phoneNumber': phoneNumber};
+  }
+
+  // Clear user info from shared preferences
+  static Future<void> clearUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyUsername);
+    await prefs.remove(_keyEmail);
+    await prefs.remove(_keyPhoneNumber);
+  }
+}
+ Future<void> printSavedUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String firstName = prefs.getString('firstname') ?? 'No first name';
+    String lastName = prefs.getString('lastname') ?? 'No last name';
+    String email = prefs.getString('email') ?? 'No email';
+    String phonenumer = prefs.getString('phonenumber') ?? 'No phone';
+
+    print('First Name: $firstName');
+    print('Last Name: $lastName');
+    print('Email: $email');
+    print('Password: $phonenumer');
+  }
